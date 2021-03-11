@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DocManager</string>
+    <string name="middleware_url">http://10.0.2.2:8081</string>
+</resources>
