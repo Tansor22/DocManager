@@ -1,26 +1,34 @@
 package api.clients.middleware;
 
 import android.content.res.Resources;
-import core.activities.R;
+import api.clients.middleware.request.GetDocsRequest;
+import api.clients.middleware.request.NewDocRequest;
+import api.clients.middleware.request.SignDocRequest;
+import api.clients.middleware.response.GetDocsResponse;
+import api.clients.middleware.response.NewDocResponse;
+import api.clients.middleware.response.SignDocResponse;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import core.shared.Traceable;
 import lombok.AccessLevel;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.Properties;
 
-import static api.clients.middleware.HLFMiddlewareEndpoints.ACCESS_HLF;
+import static api.clients.middleware.HLFMiddlewareEndpoints.*;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class HLFMiddlewareAPIClient implements Traceable {
     String middlewareUrl;
     OkHttpClient client;
+    ObjectMapper jsonMapper = new ObjectMapper()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    static MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 
     @SneakyThrows(IOException.class)
@@ -36,16 +44,33 @@ public class HLFMiddlewareAPIClient implements Traceable {
         client = new OkHttpClient();
     }
 
+    public NewDocResponse newDoc(NewDocRequest request) {
+        return executeRequest(request, NEW_DOC, NewDocResponse.class);
+    }
+
+    public GetDocsResponse getDocs(GetDocsRequest request) {
+
+        return executeRequest(request, GET_DOCS, GetDocsResponse.class);
+    }
+
+    public SignDocResponse signDoc(SignDocRequest request) {
+        return executeRequest(request, SIGN_DOC, SignDocResponse.class);
+    }
+
+
     @SneakyThrows(IOException.class)
-    public String accessHLF() {
-        Request request = new Request.Builder()
-                .url(ACCESS_HLF.getUrlForEndpoint(middlewareUrl))
+    private <T> T executeRequest(Object request, HLFMiddlewareEndpoints endpoint, Class<T> responseEntity) {
+        RequestBody body = RequestBody.create(JSON, jsonMapper.writeValueAsString(request));
+        Request htpRequest = new Request.Builder()
+                .url(endpoint.getUrlForEndpoint(middlewareUrl))
+                .post(body)
                 .build();
-        Response response = client.newCall(request).execute();
-        if (response.body() == null) {
-            throw new IOException("No response body got from " + ACCESS_HLF.getEndpointPath());
-        } else {
-            return response.body().string();
+        try (Response response = client.newCall(htpRequest).execute()) {
+            if (response.body() == null) {
+                throw new IOException("No response body got from " + endpoint.getEndpointPath());
+            }
+            final JsonNode json = jsonMapper.readTree(response.body().byteStream());
+            return jsonMapper.readValue(json.get("response").toString(), responseEntity);
         }
     }
 }

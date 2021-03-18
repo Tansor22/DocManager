@@ -5,12 +5,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import api.clients.middleware.HLFMiddlewareAPIClient;
-import lombok.SneakyThrows;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import java.io.IOException;
+import api.clients.middleware.request.GetDocsRequest;
+import api.clients.middleware.response.GetDocsResponse;
 
 public class MainActivity extends AppCompatActivity {
     TextView resultLabel;
@@ -26,8 +22,18 @@ public class MainActivity extends AppCompatActivity {
         resultLabel = findViewById(R.id.resultLabel);
         accessButton.setOnClickListener(e ->
                 new Thread(() -> {
-                    final String response = hlfMiddlewareAPIClient.accessHLF();
-                    runOnUiThread(() -> resultLabel.setText(response));
+                    final GetDocsResponse response =
+                            hlfMiddlewareAPIClient.getDocs(GetDocsRequest.builder()
+                                    .orgName("sampleOrg")
+                                    .build());
+                /*    final NewDocResponse response = hlfMiddlewareAPIClient.newDoc(NewDocRequest.builder()
+                            .org("sampleOrg")
+                            .content("Sample content")
+                            .signRequired("DEAN")
+                            .signRequired("STUDENT")
+                            .signRequired("DOG_OF_THE_STUDENT")
+                            .build());*/
+                    runOnUiThread(() -> resultLabel.setText("ID got: " + response.toString()));
                 }).start()
         );
     }
