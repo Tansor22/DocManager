@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/mainNav"
+            app:startDestination="@+id/navDocsView">
+
+    <fragment
+            android:id="@+id/navDocsView"
+            android:name="core.activities.ui.view_docs.ViewDocumentsFragment"
+            android:label="@string/menu_docs_view"
+            tools:layout="@layout/fragment_view_docs"/>
+
+    <fragment
+            android:id="@+id/navCreateDoc"
+            android:name="core.activities.ui.create_doc.CreateDocumentFragment"
+            android:label="@string/menu_create_doc"
+            tools:layout="@layout/fragment_create_doc"/>
+</navigation>
