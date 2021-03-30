@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements Traceable {
         NavigationView navigationView = findViewById(R.id.navView);
 
         appBarConfiguration = new AppBarConfiguration.Builder(R.id.navDocsView, R.id.navCreateDoc)
-                .setDrawerLayout(drawer)
+                .setOpenableLayout(drawer)
                 .build();
 
         final NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.navHostFragment);
