@@ -4,12 +4,13 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import api.clients.middleware.HLFMiddlewareAPIClient;
 import api.clients.middleware.entity.Document;
-import api.clients.middleware.request.GetDocsRequest;
+import core.podam.DocumentDataProviderStrategy;
 import core.shared.Tagged;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
@@ -41,7 +42,7 @@ public class ViewDocumentsModel extends AndroidViewModel implements Tagged {
 
     // TODO: delete
     List<Document> populateModel() {
-        PodamFactory pf = new PodamFactoryImpl();
+        PodamFactory pf = new PodamFactoryImpl(new DocumentDataProviderStrategy());
         return IntStream.range(0, 20)
                 .mapToObj(ignored -> pf.manufacturePojo(Document.class))
                 .collect(Collectors.toList());

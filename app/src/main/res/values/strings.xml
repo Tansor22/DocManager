@@ -5,7 +5,7 @@
 <resources>
     <string name="app_name">&appname;</string>
     <string name="middleware_url">http://10.0.2.2:8081</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">&appname;</string>
     <string name="nav_header_title">@string/app_name</string>
     <string name="nav_header_subtitle">lyutyy.mail@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
