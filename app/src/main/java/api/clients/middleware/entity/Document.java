@@ -6,6 +6,8 @@ import java.util.List;
 @Data
 public class Document {
     String documentId;
+    String title;
+    String description;
     String org;
     String date;
     String content;

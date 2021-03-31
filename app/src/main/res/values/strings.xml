@@ -14,4 +14,7 @@
     <string name="menu_docs_view">Мои документы</string>
     <string name="menu_create_doc">Новый документ</string>
     <string name="placeholder">placeholder</string>
+    <string name="date_sample">20.02.21</string>
+    <string name="doc_title_sample">Приказ об отчислении</string>
+    <string name="description_sample">Студенты ПИ</string>
 </resources>

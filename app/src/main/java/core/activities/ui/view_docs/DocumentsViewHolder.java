@@ -11,18 +11,26 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 
 @Getter
 @Setter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Accessors(fluent = true, prefix = "_")
 public class DocumentsViewHolder extends RecyclerView.ViewHolder {
-    TextView _view;
-    @NonFinal
-    Document _doc;
+    TextView _date;
+    TextView _title;
+    TextView _description;
+
     public DocumentsViewHolder(@NonNull View itemView) {
         super(itemView);
-        _view = itemView.findViewById(R.id.textView);
+        _date = itemView.findViewById(R.id.tvDate);
+        _title = itemView.findViewById(R.id.tvTitle);
+        _description = itemView.findViewById(R.id.tvDescription);
+    }
+
+    void updateUI(Document doc) {
+        _date.setText(doc.getDate());
+        _title.setText(doc.getTitle());
+        _description.setText(doc.getDescription());
     }
 }

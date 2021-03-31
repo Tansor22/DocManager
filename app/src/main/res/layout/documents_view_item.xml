@@ -1,32 +1,39 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:padding="10pt"
-              android:layout_centerInParent="true"
-              android:orientation="vertical"
-              android:gravity="center">
-    <LinearLayout
-            android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:orientation="horizontal"
-                  android:gravity="center">
-    <ImageView
-            android:id="@+id/signDocButton"
-            android:src="@drawable/ic_sign_doc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    <TextView
-            android:id="@+id/textView"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/colorFullBlack"
-            android:layout_width="match_parent"
-            android:gravity="center"
-            android:text="@string/placeholder"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="wrap_content"
+                                   android:layout_marginEnd="8dp"
+                                   android:layout_marginTop="8dp"
+                                   android:layout_marginStart="8dp">
 
-    <View android:layout_width="match_parent"
-          android:background="@android:color/darker_gray"
-          android:layout_margin="5dp"
-          android:layout_height="1dp"/>
-</LinearLayout>
+    <!--Document container-->
+    <RelativeLayout
+            android:id="@+id/itemHolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+        <!--Document date-->
+        <TextView android:id="@+id/tvDate"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentEnd="true"
+                  android:text="@string/date_sample"
+                  android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+        <!--Document title -->
+        <TextView android:id="@+id/tvTitle"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/doc_title_sample"
+                  android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                  android:maxLines="1"
+                  android:layout_toStartOf="@id/tvDate"
+                  android:layout_alignParentStart="true"
+                  android:ellipsize="end"/>
+        <!--Document description-->
+        <TextView android:id="@+id/tvDescription"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/description_sample"
+                  android:layout_below="@id/tvTitle"/>
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

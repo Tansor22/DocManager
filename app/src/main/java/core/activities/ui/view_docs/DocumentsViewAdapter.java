@@ -9,14 +9,16 @@ import api.clients.middleware.entity.Document;
 import core.activities.R;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@NoArgsConstructor
 public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHolder> {
-    List<Document> _dataset;
+    List<Document> _docs;
 
     @NonNull
     @Override
@@ -28,11 +30,16 @@ public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHold
 
     @Override
     public void onBindViewHolder(@NonNull DocumentsViewHolder holder, int position) {
-        holder.view().setText("Doc with id " + _dataset.get(position).getDocumentId());
+        holder.updateUI(_docs.get(position));
+    }
+
+    public void setDocs(List<Document> docs) {
+        this._docs = docs;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return _dataset.size();
+        return _docs.size();
     }
 }
