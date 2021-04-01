@@ -1,6 +1,7 @@
 package core.activities;
 
 import android.os.Bundle;
+import android.view.Menu;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -59,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements Traceable {
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
- /*
+
+/*
   Uncomment if menu is needed
   @Override
     public boolean onCreateOptionsMenu(Menu menu) {

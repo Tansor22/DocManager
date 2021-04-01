@@ -1,0 +1,95 @@
+[
+  {
+    "_id": "text_1",
+    "text": "Hi! I'm textview",
+    "hint": "Hi! I'm textview",
+    "type": 1
+  },
+  {
+    "_id": "edittext_1",
+    "text": "Hi! I'm edittext(Enter Numbers)",
+    "hint": "Hi! I'm edittext(Enter Numbers)",
+    "input_type": "numbers",
+    "max_length": 2,
+    "type": 2
+  },
+  {
+    "_id": "edittext_2",
+    "text": "Hi! I'm edittext(Enter Numbers Decimal)",
+    "hint": "Hi! I'm edittext(Enter Numbers Decimal)",
+    "input_type": "numbers_decimal",
+    "max_length": 7,
+    "type": 2
+  },
+  {
+    "_id": "edittext_3",
+    "text": "Hi! I'm edittext(Enter text) *Required",
+    "hint": "Hi! I'm edittext(Enter text)",
+    "input_type": "text",
+    "is_required": true,
+    "max_length": 30,
+    "type": 2
+  },
+  {
+    "_id": "radio_group_1",
+    "text": "Hi! I'm radio group",
+    "is_required": true,
+    "list": [
+      {
+        "index": 0,
+        "index_text": "Radio 1"
+      },
+      {
+        "index": 1,
+        "index_text": "Radio 2"
+      },
+      {
+        "index": 2,
+        "index_text": "Radio 3"
+      },
+      {
+        "index": 3,
+        "index_text": "Radio 4"
+      }
+    ],
+    "type": 4
+  },
+  {
+    "_id": "spinner_1",
+    "text": "Hi! I'm spinner",
+    "list": [
+      {
+        "index": 0,
+        "index_text": "Item 1"
+      },
+      {
+        "index": 1,
+        "index_text": "Item 2"
+      },
+      {
+        "index": 2,
+        "index_text": "Item 3"
+      },
+      {
+        "index": 3,
+        "index_text": "Item 4"
+      }
+    ],
+    "type": 3
+  },
+  {
+    "_id": "again_button",
+    "text": "Hi! I'm add button",
+    "type": 9
+  },
+  {
+    "_id": "space_1",
+    "text": "Hi, I am Space",
+    "type": 6
+  },
+  {
+    "_id": "submit_button",
+    "text": "Submit",
+    "type": 10
+  }
+]
