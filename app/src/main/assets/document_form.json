@@ -78,11 +78,6 @@
     "type": 3
   },
   {
-    "_id": "again_button",
-    "text": "Hi! I'm add button",
-    "type": 9
-  },
-  {
     "_id": "space_1",
     "text": "Hi, I am Space",
     "type": 6

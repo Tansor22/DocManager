@@ -1,0 +1,9 @@
+package core.sessions;
+
+public interface SessionConstants {
+    String SESSION_PREFERENCES_PREFIX = "ru.astu.doc_manager.session_manager.";
+    String SESSION_PREFERENCES = SESSION_PREFERENCES_PREFIX + "SESSION_PREFERENCES";
+    String SESSION_TOKEN = SESSION_PREFERENCES_PREFIX + "SESSION_TOKEN";
+    String SESSION_EXPIRY_TIME = SESSION_PREFERENCES_PREFIX + "SESSION_EXPIRY_TIME";
+    String ORG = SESSION_PREFERENCES_PREFIX + "ORG";
+}

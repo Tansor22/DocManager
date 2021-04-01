@@ -11,6 +11,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
+import core.sessions.SessionConstants;
+import core.sessions.SessionManager;
 import core.shared.Traceable;
 
 import java.util.Objects;
@@ -18,6 +20,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements Traceable {
 
     private AppBarConfiguration appBarConfiguration;
+
     /*
           Button accessButton = findViewById(R.id.accessButton);
           // init API client
@@ -58,6 +61,10 @@ public class MainActivity extends AppCompatActivity implements Traceable {
                 Objects.requireNonNull(navHostFragment, "No nav host found, check configuration").getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        // todo user authentication
+        SessionManager.startUserSession(getApplicationContext(), 3_600);
+        SessionManager.store(getApplicationContext(), SessionConstants.ORG, "org");
     }
 
 

@@ -19,6 +19,8 @@ import com.shamweel.jsontoforms.models.JSONModel;
 import com.shamweel.jsontoforms.sigleton.DataValueHashMap;
 import com.shamweel.jsontoforms.validate.CheckFieldValidations;
 import core.activities.R;
+import core.sessions.SessionConstants;
+import core.sessions.SessionManager;
 import core.shared.JsonUtils;
 import core.shared.Traceable;
 import org.json.JSONObject;
@@ -38,16 +40,8 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
                              ViewGroup container, Bundle savedInstanceState) {
         createDocumentModel = new ViewModelProvider(this).get(CreateDocumentModel.class);
         View root = inflater.inflate(R.layout.fragment_create_doc, container, false);
-        /*final FormInputButton btnWrapper = root.findViewById(R.id.btnSubmit);
-        btnWrapper.getButton().setOnClickListener((self) -> {
-            btnWrapper.showLoading(true);
-            trace("ButtonClicked");
-        });*/
-
-
         // form init
-
-        recyclerView = root.findViewById(R.id.recyclerView2);
+        recyclerView = root.findViewById(R.id.recyclerView);
         DataValueHashMap.init();
         initRecyclerView();
         fetchData();
@@ -63,8 +57,13 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
     }
 
     private void fetchData() {
-        String json = JsonUtils.loadJSONFromAsset(requireContext(), "document_form.json");
-        List<JSONModel> jsonModelList1 = new Gson().fromJson(json, new TypeToken<List<JSONModel>>(){}.getType());
+        String formSource = "document_form.json";
+        if ("org2".equals(SessionManager.get(requireContext(), SessionConstants.ORG))) {
+            formSource = "document_form2.json";
+        }
+        String json = JsonUtils.loadJSONFromAsset(requireContext(), formSource);
+        List<JSONModel> jsonModelList1 = new Gson().fromJson(json, new TypeToken<List<JSONModel>>() {
+        }.getType());
         jsonModelList.addAll(jsonModelList1);
         mAdapter.notifyDataSetChanged();
     }
