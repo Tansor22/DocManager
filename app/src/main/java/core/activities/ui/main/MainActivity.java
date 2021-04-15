@@ -1,7 +1,6 @@
-package core.activities;
+package core.activities.ui.main;
 
 import android.os.Bundle;
-import android.view.Menu;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -11,6 +10,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
+import core.activities.R;
 import core.sessions.SessionConstants;
 import core.sessions.SessionManager;
 import core.shared.Traceable;

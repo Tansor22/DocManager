@@ -58,7 +58,11 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
 
     private void fetchData() {
         String formSource = "document_form.json";
-        if ("org2".equals(SessionManager.get(requireContext(), SessionConstants.ORG))) {
+        final String org = SessionManager.get(requireContext(), SessionConstants.ORG);
+        if (org == null || org.length() == 0) {
+            trace("No org!");
+        }
+        if ("org2".equals(org)) {
             formSource = "document_form2.json";
         }
         String json = JsonUtils.loadJSONFromAsset(requireContext(), formSource);
