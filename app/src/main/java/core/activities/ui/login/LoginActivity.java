@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import api.clients.middleware.HLFMiddlewareAPIClient;
 import core.activities.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -24,8 +25,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // todo change layout and adapt views
         setContentView(R.layout.activity_login_old);
+        final HLFMiddlewareAPIClient apiClient = new HLFMiddlewareAPIClient(getResources());
         loginViewModel =
-                new ViewModelProvider(this, new LoginViewModelFactory()).get(LoginViewModel.class);
+                new ViewModelProvider(this, new LoginViewModelFactory(apiClient)).get(LoginViewModel.class);
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);

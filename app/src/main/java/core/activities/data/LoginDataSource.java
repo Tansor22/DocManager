@@ -1,23 +1,25 @@
 package core.activities.data;
 
+import api.clients.middleware.HLFMiddlewareAPIClient;
+import api.clients.middleware.request.SignInRequest;
+import api.clients.middleware.response.SignInResponse;
 import core.activities.data.model.LoggedInUser;
+import lombok.AllArgsConstructor;
 
 import java.io.IOException;
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
+@AllArgsConstructor
 public class LoginDataSource {
-
+    HLFMiddlewareAPIClient apiClient;
     public Result login(String username, String password) {
-
         try {
-            // TODO: handle loggedInUser authentication, call middleware signIn
-            LoggedInUser fakeUser =
-                    new LoggedInUser(
-                            java.util.UUID.randomUUID().toString(),
-                            "Jane Doe");
-            return new Result.Success(fakeUser);
+            final SignInRequest signInRequest = new SignInRequest(username, password);
+            final SignInResponse signInResponse = apiClient.signIn(signInRequest);
+            LoggedInUser user = new LoggedInUser(signInResponse);
+            return new Result.Success(user);
         } catch (Exception e) {
             return new Result.Error(new IOException("Error logging in", e));
         }

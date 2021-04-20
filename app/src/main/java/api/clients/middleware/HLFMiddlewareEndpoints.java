@@ -9,9 +9,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 public enum HLFMiddlewareEndpoints {
-    NEW_DOC("/newDoc"),
-    SIGN_DOC("/signDoc"),
-    GET_DOCS("/getDocs");
+    SIGN_UP("/api/auth/signUp"),
+    SIGN_IN("/api/auth/signIn"),
+    // user apis
+    NEW_DOC("/api/chaincode/newDoc"),
+    SIGN_DOC("/api/chaincode/signDoc"),
+    GET_DOCS("/api/chaincode/getDocs");
     String endpointPath;
 
     public String getUrlForEndpoint(String url) {

@@ -9,7 +9,13 @@ import core.activities.data.Result;
 import core.activities.data.model.LoggedInUser;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class LoginViewModel extends ViewModel {
@@ -18,21 +24,25 @@ public class LoginViewModel extends ViewModel {
     @Getter
     MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     LoginRepository loginRepository;
+    ExecutorService executorService;
 
     LoginViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
+        this.executorService = Executors.newSingleThreadExecutor();
     }
 
     public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result result = loginRepository.login(username, password);
-
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success) result).getUser();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+        executorService.execute(() -> {
+            Result result = loginRepository.login(username, password);
+            LoginResult lr;
+            if (result instanceof Result.Success) {
+                LoggedInUser data = ((Result.Success) result).getUser();
+                lr = new LoginResult(new LoggedInUserView(data.getSignInResponse().getUsername()));
+            } else {
+                lr = new LoginResult(R.string.login_failed);
+            }
+            loginResult.postValue(lr);
+        });
     }
 
     public void loginDataChanged(String username, String password) {

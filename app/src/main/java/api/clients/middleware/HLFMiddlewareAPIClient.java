@@ -1,12 +1,9 @@
 package api.clients.middleware;
 
 import android.content.res.Resources;
-import api.clients.middleware.request.GetDocsRequest;
-import api.clients.middleware.request.NewDocRequest;
-import api.clients.middleware.request.SignDocRequest;
-import api.clients.middleware.response.GetDocsResponse;
-import api.clients.middleware.response.NewDocResponse;
-import api.clients.middleware.response.SignDocResponse;
+import api.clients.UtilsTLS;
+import api.clients.middleware.request.*;
+import api.clients.middleware.response.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,15 +30,15 @@ public class HLFMiddlewareAPIClient implements Traceable {
 
     @SneakyThrows(IOException.class)
     public HLFMiddlewareAPIClient(Resources resources) {
-        // retrieving middleware url from application properties
+
+        // todo change to android strings, retrieving middleware url from application properties
         String propertiesFileName = "application.properties";
         final InputStream inputStream = resources.getAssets().open(propertiesFileName);
         final Properties properties = new Properties();
         properties.load(inputStream);
         middlewareUrl = properties.getProperty("middleware.url");
         trace("Got middlewareUrl = %s from %s properties filename.", middlewareUrl, propertiesFileName);
-        // client can be configured additionally
-        client = new OkHttpClient();
+        client = UtilsTLS.getSSLClient(resources);
     }
 
     public NewDocResponse newDoc(NewDocRequest request) {
@@ -55,6 +52,14 @@ public class HLFMiddlewareAPIClient implements Traceable {
 
     public SignDocResponse signDoc(SignDocRequest request) {
         return executeRequest(request, SIGN_DOC, SignDocResponse.class);
+    }
+
+    public SignUpResponse signUp(SignUpRequest request) {
+        return executeRequest(request, SIGN_UP, SignUpResponse.class);
+    }
+
+    public SignInResponse signIn(SignInRequest request) {
+        return executeRequest(request, SIGN_IN, SignInResponse.class);
     }
 
 

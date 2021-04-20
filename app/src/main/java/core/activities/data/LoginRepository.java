@@ -2,6 +2,7 @@ package core.activities.data;
 
 import core.activities.data.model.LoggedInUser;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
@@ -10,7 +11,7 @@ import lombok.experimental.NonFinal;
  * maintains an in-memory cache of login status and user credentials information.
  */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-// todo пробросить middleware клиента
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginRepository {
 
     static volatile LoginRepository INSTANCE;
@@ -20,16 +21,11 @@ public class LoginRepository {
     // If user credentials will be cached in local storage, it is recommended it be encrypted
     // @see https://developer.android.com/training/articles/keystore
     @NonFinal
-    LoggedInUser user = null;
-
-    // private constructor : singleton access
-    private LoginRepository(LoginDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    LoggedInUser user;
 
     public static LoginRepository getInstance(LoginDataSource dataSource) {
         if (INSTANCE == null) {
-            INSTANCE = new LoginRepository(dataSource);
+            INSTANCE = new LoginRepository(dataSource, null);
         }
         return INSTANCE;
     }
@@ -50,7 +46,6 @@ public class LoginRepository {
     }
 
     public Result login(String username, String password) {
-        // handle login
         Result result = dataSource.login(username, password);
         if (result instanceof Result.Success) {
             setLoggedInUser(((Result.Success) result).getUser());
