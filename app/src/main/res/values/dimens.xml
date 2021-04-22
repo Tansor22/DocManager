@@ -7,7 +7,7 @@
     <dimen name="fab_margin">32dp</dimen>
     <!--Login & register layout-->
     <dimen name="headerTextSize">22sp</dimen>
-    <dimen name="newsMoreTextSize">12sp</dimen>
+    <dimen name="newsMoreTextSize">16sp</dimen>
     <dimen name="loginCardRadius">20dp</dimen>
     <dimen name="loginViewsMargin">20dp</dimen>
 

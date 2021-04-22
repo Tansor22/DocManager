@@ -12,12 +12,12 @@ import java.io.IOException;
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 @AllArgsConstructor
-public class LoginDataSource {
-    HLFMiddlewareAPIClient apiClient;
+public class AuthDataSource {
+
     public Result login(String username, String password) {
         try {
             final SignInRequest signInRequest = new SignInRequest(username, password);
-            final SignInResponse signInResponse = apiClient.signIn(signInRequest);
+            final SignInResponse signInResponse = HLFMiddlewareAPIClient.getInstance().signIn(signInRequest);
             LoggedInUser user = new LoggedInUser(signInResponse);
             return new Result.Success(user);
         } catch (Exception e) {

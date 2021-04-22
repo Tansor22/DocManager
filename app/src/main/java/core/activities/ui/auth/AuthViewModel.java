@@ -1,4 +1,4 @@
-package core.activities.ui.login;
+package core.activities.ui.auth;
 
 import android.util.Patterns;
 import androidx.lifecycle.MutableLiveData;
@@ -9,16 +9,13 @@ import core.activities.data.Result;
 import core.activities.data.model.LoggedInUser;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class LoginViewModel extends ViewModel {
+public class AuthViewModel extends ViewModel {
     @Getter
     MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     @Getter
@@ -26,7 +23,7 @@ public class LoginViewModel extends ViewModel {
     LoginRepository loginRepository;
     ExecutorService executorService;
 
-    LoginViewModel(LoginRepository loginRepository) {
+    AuthViewModel(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
         this.executorService = Executors.newSingleThreadExecutor();
     }

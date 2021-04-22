@@ -7,6 +7,7 @@ import api.clients.middleware.response.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import core.shared.ApplicationContext;
 import core.shared.Traceable;
 import lombok.AccessLevel;
 import lombok.SneakyThrows;
@@ -27,10 +28,18 @@ public class HLFMiddlewareAPIClient implements Traceable {
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     static MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+    private static HLFMiddlewareAPIClient INSTANCE;
+
+    public static HLFMiddlewareAPIClient getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HLFMiddlewareAPIClient();
+        }
+        return INSTANCE;
+    }
 
     @SneakyThrows(IOException.class)
-    public HLFMiddlewareAPIClient(Resources resources) {
-
+    private HLFMiddlewareAPIClient() {
+        final Resources resources = ApplicationContext.get().getResources();
         // todo change to android strings, retrieving middleware url from application properties
         String propertiesFileName = "application.properties";
         final InputStream inputStream = resources.getAssets().open(propertiesFileName);

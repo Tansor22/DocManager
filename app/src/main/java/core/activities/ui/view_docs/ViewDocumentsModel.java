@@ -26,12 +26,10 @@ import java.util.stream.IntStream;
 @Setter
 public class ViewDocumentsModel extends AndroidViewModel implements Tagged {
     MutableLiveData<List<Document>> docs;
-    HLFMiddlewareAPIClient hlfClient;
 
     public ViewDocumentsModel(@NonNull Application application) {
         super(application);
-        hlfClient = new HLFMiddlewareAPIClient(application.getResources());
-       /* docs = new MutableLiveData<>(hlfClient.getDocs(GetDocsRequest.builder()
+       /* docs = new MutableLiveData<>(HLFMiddlewareAPIClient.getInstance().getDocs(GetDocsRequest.builder()
                 .orgName("someOrg")
                 .build())
                 .getDocuments()); */

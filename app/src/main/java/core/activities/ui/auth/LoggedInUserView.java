@@ -1,4 +1,4 @@
-package core.activities.ui.login;
+package core.activities.ui.auth;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

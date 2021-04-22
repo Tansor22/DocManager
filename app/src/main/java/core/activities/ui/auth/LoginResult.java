@@ -1,4 +1,4 @@
-package core.activities.ui.login;
+package core.activities.ui.auth;
 
 import androidx.annotation.Nullable;
 import lombok.Getter;
