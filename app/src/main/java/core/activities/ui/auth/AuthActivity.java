@@ -1,5 +1,6 @@
 package core.activities.ui.auth;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,16 +20,14 @@ import core.shared.ApplicationContext;
 public abstract class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AuthViewModel authViewModel;
+    private @IdRes
+    int layout;
 
-    protected abstract @IdRes
-    int getLayout();
+    protected final void init(@IdRes int layout) {
+        this.layout = layout;
+    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(getLayout());
-        // mist be the first line in code
-        ApplicationContext.getInstance().init(getApplicationContext());
+    protected void setupUI() {
         // activity's controls
         final EditText passEditText = findViewById(R.id.passEditText);
         final EditText loginEditText = findViewById(R.id.loginEditText);
@@ -95,19 +94,41 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
 
         passEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                authViewModel.login(loginEditText.getText().toString(),
-                        passEditText.getText().toString());
+                String login = loginEditText.getText().toString();
+                String pass = passEditText.getText().toString();
+                auth(login, pass);
             }
             return false;
         });
         submitButton.setEnabled(false);
         submitButton.setOnClickListener(v -> {
             loadingProgressBar.setVisibility(View.VISIBLE);
-            authViewModel.login(loginEditText.getText().toString(),
-                    passEditText.getText().toString());
+            String login = loginEditText.getText().toString();
+            String pass = passEditText.getText().toString();
+            auth(login, pass);
+
         });
         changeFormTextView.setOnClickListener(this);
         closeImageView.setOnClickListener(self -> finish());
+    }
+
+    private void auth(String login, String pass) {
+        if (layout == R.layout.activity_sign_up) {
+            authViewModel.signUp(login, pass);
+        } else if (layout == R.layout.activity_sign_in) {
+            authViewModel.signIn(login, pass);
+        }
+    }
+
+    @SuppressLint("ResourceType")
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // move to setupUI
+        setContentView(layout);
+        // mist be the first line in code
+        ApplicationContext.getInstance().init(getApplicationContext());
+        setupUI();
     }
 
     private void updateUiWithUser(LoggedInUserView model) {

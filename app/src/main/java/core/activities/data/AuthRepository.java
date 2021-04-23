@@ -12,9 +12,9 @@ import lombok.experimental.NonFinal;
  */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class LoginRepository {
+public class AuthRepository {
 
-    static volatile LoginRepository INSTANCE;
+    static volatile AuthRepository INSTANCE;
 
     AuthDataSource dataSource;
 
@@ -23,9 +23,9 @@ public class LoginRepository {
     @NonFinal
     LoggedInUser user;
 
-    public static LoginRepository getInstance(AuthDataSource dataSource) {
+    public static AuthRepository getInstance(AuthDataSource dataSource) {
         if (INSTANCE == null) {
-            INSTANCE = new LoginRepository(dataSource, null);
+            INSTANCE = new AuthRepository(dataSource, null);
         }
         return INSTANCE;
     }
@@ -36,7 +36,6 @@ public class LoginRepository {
 
     public void logout() {
         user = null;
-        dataSource.logout();
     }
 
     private void setLoggedInUser(LoggedInUser user) {
@@ -45,8 +44,16 @@ public class LoginRepository {
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public Result login(String username, String password) {
-        Result result = dataSource.login(username, password);
+    public Result signIn(String username, String password) {
+        Result result = dataSource.signIn(username, password);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success) result).getUser());
+        }
+        return result;
+    }
+
+    public Result signUp(String username, String password) {
+        Result result = dataSource.signUp(username, password);
         if (result instanceof Result.Success) {
             setLoggedInUser(((Result.Success) result).getUser());
         }

@@ -2,7 +2,9 @@ package core.activities.data;
 
 import api.clients.middleware.HLFMiddlewareAPIClient;
 import api.clients.middleware.request.SignInRequest;
+import api.clients.middleware.request.SignUpRequest;
 import api.clients.middleware.response.SignInResponse;
+import api.clients.middleware.response.SignUpResponse;
 import core.activities.data.model.LoggedInUser;
 import lombok.AllArgsConstructor;
 
@@ -14,7 +16,7 @@ import java.io.IOException;
 @AllArgsConstructor
 public class AuthDataSource {
 
-    public Result login(String username, String password) {
+    public Result signIn(String username, String password) {
         try {
             final SignInRequest signInRequest = new SignInRequest(username, password);
             final SignInResponse signInResponse = HLFMiddlewareAPIClient.getInstance().signIn(signInRequest);
@@ -25,7 +27,19 @@ public class AuthDataSource {
         }
     }
 
-    public void logout() {
-        // TODO: revoke authentication
+
+    public Result signUp(String username, String password) {
+        try {
+            // todo сделать email
+            final SignUpRequest signUpRequest = new SignUpRequest(username, username, password);
+            final SignUpResponse signInResponse = HLFMiddlewareAPIClient.getInstance().signUp(signUpRequest);
+            if ("Ok".equals(signInResponse.getResult())) {
+                return new Result.Success(null);
+            } else {
+                return new Result.Error(new IOException("Unexpected result got"));
+            }
+        } catch (Exception e) {
+            return new Result.Error(new IOException("Error logging in", e));
+        }
     }
 }

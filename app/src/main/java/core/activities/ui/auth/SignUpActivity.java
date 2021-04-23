@@ -5,9 +5,8 @@ import android.view.View;
 import core.activities.R;
 
 public class SignUpActivity extends AuthActivity {
-    @Override
-    protected int getLayout() {
-        return R.layout.activity_sign_up;
+    {
+        init(R.layout.activity_sign_up);
     }
 
     @Override

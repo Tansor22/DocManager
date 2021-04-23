@@ -4,7 +4,7 @@ import android.util.Patterns;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import core.activities.R;
-import core.activities.data.LoginRepository;
+import core.activities.data.AuthRepository;
 import core.activities.data.Result;
 import core.activities.data.model.LoggedInUser;
 import lombok.AccessLevel;
@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class AuthViewModel extends ViewModel {
@@ -20,17 +21,17 @@ public class AuthViewModel extends ViewModel {
     MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     @Getter
     MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    LoginRepository loginRepository;
+    AuthRepository authRepository;
     ExecutorService executorService;
 
-    AuthViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    AuthViewModel(AuthRepository authRepository) {
+        this.authRepository = authRepository;
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
-    public void login(String username, String password) {
+    private void auth(Supplier<Result> auth) {
         executorService.execute(() -> {
-            Result result = loginRepository.login(username, password);
+            Result result = auth.get();
             LoginResult lr;
             if (result instanceof Result.Success) {
                 LoggedInUser data = ((Result.Success) result).getUser();
@@ -40,6 +41,14 @@ public class AuthViewModel extends ViewModel {
             }
             loginResult.postValue(lr);
         });
+    }
+
+    public void signIn(String username, String password) {
+        auth(() -> authRepository.signIn(username, password));
+    }
+
+    public void signUp(String username, String password) {
+        auth(() -> authRepository.signUp(username, password));
     }
 
     public void loginDataChanged(String username, String password) {
