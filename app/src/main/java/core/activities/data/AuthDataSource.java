@@ -20,7 +20,7 @@ public class AuthDataSource {
         try {
             final SignInRequest signInRequest = new SignInRequest(username, password);
             final SignInResponse signInResponse = HLFMiddlewareAPIClient.getInstance().signIn(signInRequest);
-            LoggedInUser user = new LoggedInUser(signInResponse);
+            LoggedInUser user = LoggedInUser.fromSignInResponse(signInResponse);
             return new Result.Success(user);
         } catch (Exception e) {
             return new Result.Error(new IOException("Error logging in", e));
@@ -32,9 +32,9 @@ public class AuthDataSource {
         try {
             // todo сделать email
             final SignUpRequest signUpRequest = new SignUpRequest(username, username, password);
-            final SignUpResponse signInResponse = HLFMiddlewareAPIClient.getInstance().signUp(signUpRequest);
-            if ("Ok".equals(signInResponse.getResult())) {
-                return new Result.Success(null);
+            final SignUpResponse signUpResponse = HLFMiddlewareAPIClient.getInstance().signUp(signUpRequest);
+            if ("Ok".equals(signUpResponse.getResult())) {
+               return signIn(username, password);
             } else {
                 return new Result.Error(new IOException("Unexpected result got"));
             }

@@ -15,4 +15,11 @@ public interface Traceable extends Tagged {
         }
         Log.i(getTag(), String.format(message, args));
     }
+
+    default void error(String message, Object... args) {
+        if (Objects.isNull(message)) {
+            throw new NullPointerException("Message cannot be null");
+        }
+        Log.e(getTag(), String.format(message, args));
+    }
 }

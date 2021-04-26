@@ -1,5 +1,6 @@
 package core.activities.ui.auth;
 
+import com.auth0.android.jwt.JWT;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,5 +15,5 @@ import lombok.experimental.FieldDefaults;
 // session object
 class LoggedInUserView {
     String displayName;
-    //... other data fields that may be accessible to the UI
+    JWT jwt;
 }

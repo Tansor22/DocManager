@@ -1,6 +1,5 @@
 package core.activities.ui.auth;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import core.activities.R;
 import core.activities.ui.main.MainActivity;
 import core.shared.ApplicationContext;
+
+import java.util.Optional;
 
 public abstract class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -35,7 +36,9 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         final ProgressBar loadingProgressBar = findViewById(R.id.authProgressBar);
         final ImageView closeImageView = findViewById(R.id.closeImageView);
         final TextView changeFormTextView = findViewById(R.id.changeFormTextView);
-
+        // todo for dev purposes, delete later
+        loginEditText.setText("user332");
+        passEditText.setText("pass");
         authViewModel =
                 new ViewModelProvider(this, new AuthViewModelFactory()).get(AuthViewModel.class);
         authViewModel.getLoginFormState().observe(this, loginFormState -> {
@@ -58,18 +61,14 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
             loadingProgressBar.setVisibility(View.GONE);
             if (loginResult.getError() != null) {
                 showLoginFailed(loginResult.getError());
-                // todo move to another branch
-                Intent intent = new Intent(this, MainActivity.class);
-                finish();
-                startActivity(intent);
             } else if (loginResult.getSuccess() != null) {
                 updateUiWithUser(loginResult.getSuccess());
 
                 setResult(Activity.RESULT_OK);
 
-                // todo start main activity
-                //Complete and destroy login activity once successful
+                Intent intent = new Intent(this, MainActivity.class);
                 finish();
+                startActivity(intent);
             }
         });
         TextWatcher afterTextChangedListener = new TextWatcher() {
@@ -100,7 +99,8 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
             }
             return false;
         });
-        submitButton.setEnabled(false);
+        // todo set false
+        submitButton.setEnabled(true);
         submitButton.setOnClickListener(v -> {
             loadingProgressBar.setVisibility(View.VISIBLE);
             String login = loginEditText.getText().toString();
@@ -120,7 +120,17 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    @SuppressLint("ResourceType")
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +139,17 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         // mist be the first line in code
         ApplicationContext.getInstance().init(getApplicationContext());
         setupUI();
+        // todo should use session storage instead, as models and all activity's fields are erased
+        Optional.ofNullable(authViewModel.getLoginResult().getValue())
+                .map(LoginResult::getSuccess)
+                .map(LoggedInUserView::getJwt)
+                .ifPresent(jwt -> {
+                    if (!jwt.isExpired(System.currentTimeMillis())) {
+                        Intent intent = new Intent(this, MainActivity.class);
+                        finish();
+                        startActivity(intent);
+                    }
+                });
     }
 
     private void updateUiWithUser(LoggedInUserView model) {

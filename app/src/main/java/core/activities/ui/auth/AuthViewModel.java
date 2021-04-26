@@ -35,7 +35,7 @@ public class AuthViewModel extends ViewModel {
             LoginResult lr;
             if (result instanceof Result.Success) {
                 LoggedInUser data = ((Result.Success) result).getUser();
-                lr = new LoginResult(new LoggedInUserView(data.getSignInResponse().getUsername()));
+                lr = new LoginResult(new LoggedInUserView(data.getData().getUsername(), data.getJwt()));
             } else {
                 lr = new LoginResult(R.string.login_failed);
             }
@@ -75,6 +75,6 @@ public class AuthViewModel extends ViewModel {
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 5;
+        return password != null && password.trim().length() > 4;
     }
 }
