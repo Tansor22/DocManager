@@ -2,6 +2,7 @@ package core.activities.data.model;
 
 import api.clients.middleware.response.SignInResponse;
 import com.auth0.android.jwt.JWT;
+import core.sessions.SessionManager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -9,14 +9,15 @@ import java.util.Date;
 import static core.sessions.SessionConstants.*;
 
 public class SessionManager {
-    public static void startUserSession(Context context, int expiresIn) {
+    public static void startUserSession(Context context, String token, long expiresIn) {
         val calendar = Calendar.getInstance();
         val userLoggedInTime = calendar.getTime();
         calendar.setTime(userLoggedInTime);
-        calendar.add(Calendar.SECOND, expiresIn);
+        calendar.add(Calendar.SECOND, (int) expiresIn);
         val expiryTime = calendar.getTime();
         val tokenSharedPreferences = context.getSharedPreferences(SESSION_PREFERENCES, 0);
         val editor = tokenSharedPreferences.edit();
+        editor.putString(SESSION_TOKEN, token);
         editor.putLong(SESSION_EXPIRY_TIME, expiryTime.getTime());
         editor.apply();
     }

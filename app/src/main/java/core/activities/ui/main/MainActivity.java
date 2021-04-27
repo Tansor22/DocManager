@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements Traceable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final String userToken = SessionManager.getUserToken(getApplicationContext());
+        trace("User token got = %s", userToken);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -61,10 +63,6 @@ public class MainActivity extends AppCompatActivity implements Traceable {
                 Objects.requireNonNull(navHostFragment, "No nav host found, check configuration").getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        // todo user authentication
-        SessionManager.startUserSession(getApplicationContext(), 3_600);
-        SessionManager.store(getApplicationContext(), SessionConstants.ORG, "org");
     }
 
 

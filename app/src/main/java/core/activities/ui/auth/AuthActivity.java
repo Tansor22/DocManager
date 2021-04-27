@@ -12,11 +12,13 @@ import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import com.auth0.android.jwt.JWT;
 import core.activities.R;
 import core.activities.ui.main.MainActivity;
+import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
 
-import java.util.Optional;
+import java.util.Date;
 
 public abstract class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -63,12 +65,9 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
                 showLoginFailed(loginResult.getError());
             } else if (loginResult.getSuccess() != null) {
                 updateUiWithUser(loginResult.getSuccess());
-
-                setResult(Activity.RESULT_OK);
-
-                Intent intent = new Intent(this, MainActivity.class);
-                finish();
-                startActivity(intent);
+                final JWT jwt = loginResult.getSuccess().getJwt();
+                SessionManager.startUserSession(getApplicationContext(), jwt.toString(), jwt.getExpiresAt().getTime());
+                goToMain(jwt);
             }
         });
         TextWatcher afterTextChangedListener = new TextWatcher() {
@@ -120,6 +119,14 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    private void goToMain(JWT jwt) {
+        setResult(Activity.RESULT_OK);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("jwt", jwt);
+        finish();
+        startActivity(intent);
+    }
+
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -139,17 +146,16 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         // mist be the first line in code
         ApplicationContext.getInstance().init(getApplicationContext());
         setupUI();
-        // todo should use session storage instead, as models and all activity's fields are erased
-        Optional.ofNullable(authViewModel.getLoginResult().getValue())
-                .map(LoginResult::getSuccess)
-                .map(LoggedInUserView::getJwt)
-                .ifPresent(jwt -> {
-                    if (!jwt.isExpired(System.currentTimeMillis())) {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        finish();
-                        startActivity(intent);
-                    }
-                });
+        if (isSessionActive()) {
+            final String token = SessionManager.getUserToken(getApplicationContext());
+            JWT jwt = new JWT(token);
+            goToMain(jwt);
+        }
+    }
+
+    private boolean isSessionActive() {
+        final Date now = new Date(System.currentTimeMillis());
+        return SessionManager.isSessionActive(now, getApplicationContext());
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
