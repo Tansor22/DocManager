@@ -1,60 +1,58 @@
 package core.sessions;
 
 import android.content.Context;
+import com.auth0.android.jwt.JWT;
+import core.shared.Traceable;
 import lombok.val;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
 
-import static core.sessions.SessionConstants.*;
+import static core.sessions.SessionConstants.SESSION_PREFERENCES;
+import static core.sessions.SessionConstants.SESSION_TOKEN;
 
-public class SessionManager {
-    public static void startUserSession(Context context, String token, long expiresIn) {
-        val calendar = Calendar.getInstance();
-        val userLoggedInTime = calendar.getTime();
-        calendar.setTime(userLoggedInTime);
-        calendar.add(Calendar.SECOND, (int) expiresIn);
-        val expiryTime = calendar.getTime();
+public class SessionManager implements Traceable {
+    private static SessionManager INSTANCE;
+
+    private SessionManager() {
+    }
+
+    public static SessionManager getInstance() {
+        return Objects.nonNull(INSTANCE) ? INSTANCE : (INSTANCE = new SessionManager());
+    }
+
+    public void startUserSession(Context context, JWT token) {
         val tokenSharedPreferences = context.getSharedPreferences(SESSION_PREFERENCES, 0);
         val editor = tokenSharedPreferences.edit();
-        editor.putString(SESSION_TOKEN, token);
-        editor.putLong(SESSION_EXPIRY_TIME, expiryTime.getTime());
+        trace("Started user session with token %s, expires at %s", token.toString(), token.getExpiresAt());
+        editor.putString(SESSION_TOKEN, token.toString());
         editor.apply();
     }
 
-    public static boolean isSessionActive(Date currentTime, Context context) {
-        val sessionExpiresAt = new Date(getExpiryDateFromPreferences(context));
-        return !currentTime.after(sessionExpiresAt);
-    }
-
-    private static long getExpiryDateFromPreferences(Context context) {
-        return context.getSharedPreferences(SESSION_PREFERENCES, 0).getLong(SESSION_EXPIRY_TIME, 0);
-    }
-
-    public static void storeUserToken(Context context, String token) {
-        store(context, SESSION_TOKEN, token);
-    }
-
-    public static void store(Context context, String key, String value) {
+    public void store(Context context, String key, String value) {
         val tokenEditor = context.getSharedPreferences(SESSION_PREFERENCES, 0).edit();
         tokenEditor.putString(key, value);
         tokenEditor.apply();
     }
 
-    public static String get(Context context, String key) {
-        return context.getSharedPreferences(SESSION_PREFERENCES, 0).getString(key, "");
+    public String get(Context context, String key) {
+        return context.getSharedPreferences(SESSION_PREFERENCES, 0).getString(key, null);
     }
 
-    public static String getUserToken(Context context) {
-        return get(context, SESSION_TOKEN);
+    public Optional<JWT> getUserToken(Context context) {
+        final String token = get(context, SESSION_TOKEN);
+        return Optional.ofNullable(token)
+                .map(JWT::new);
     }
 
     public void endUserSession(Context context) {
         clearStoredData(context);
     }
 
-    private static void clearStoredData(Context context) {
-        val editor = context.getSharedPreferences(SESSION_PREFERENCES, 0).edit();
+    private void clearStoredData(Context context) {
+        val sharedPreferences = context.getSharedPreferences(SESSION_PREFERENCES, 0);
+        trace("End session with token %s", sharedPreferences.getString(SESSION_TOKEN, null));
+        val editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
     }

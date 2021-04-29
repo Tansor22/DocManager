@@ -11,9 +11,8 @@ public abstract class TokenedModel extends AndroidViewModel {
 
     public TokenedModel(@NonNull Application application) {
         super(application);
-
-        final String userToken = SessionManager.getUserToken(application);
-        token = new JWT(userToken);
+        token = SessionManager.getInstance().getUserToken(application)
+                .orElseThrow(() -> new IllegalStateException("Token must not be null at this stage."));
     }
 
 }

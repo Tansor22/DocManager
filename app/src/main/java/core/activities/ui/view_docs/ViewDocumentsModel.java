@@ -64,7 +64,8 @@ public class ViewDocumentsModel extends TokenedModel implements Traceable {
                 .build();
         try {
             final List<Document> documents = HLFMiddlewareAPIClient.getInstance().getDocs(getDocsRequest, token.toString()).getDocuments();
-            docsResult.setValue(
+            // only postValue in background!
+            docsResult.postValue(
                     GetDocsResult.builder()
                             .documents(documents)
                             .build()

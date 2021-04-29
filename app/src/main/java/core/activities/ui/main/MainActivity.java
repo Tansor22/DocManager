@@ -11,8 +11,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import core.activities.R;
-import core.sessions.SessionConstants;
 import core.sessions.SessionManager;
+import core.shared.ApplicationContext;
 import core.shared.Traceable;
 
 import java.util.Objects;
@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements Traceable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final String userToken = SessionManager.getUserToken(getApplicationContext());
-        trace("User token got = %s", userToken);
+        SessionManager.getInstance().getUserToken(ApplicationContext.get())
+                .ifPresent(token -> trace("User token got = %s", token.toString()));
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

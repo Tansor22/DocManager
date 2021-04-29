@@ -2,9 +2,11 @@ package api.clients.middleware;
 
 import android.content.res.Resources;
 import api.clients.UtilsTLS;
+import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
 import api.clients.middleware.request.*;
 import api.clients.middleware.response.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +20,7 @@ import okio.Buffer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 

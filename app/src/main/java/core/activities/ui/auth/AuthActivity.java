@@ -15,12 +15,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.auth0.android.jwt.JWT;
 import core.activities.R;
 import core.activities.ui.main.MainActivity;
+import core.activities.ui.shared.UserMessageShower;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
 
-import java.util.Date;
+import java.util.Objects;
 
-public abstract class AuthActivity extends AppCompatActivity implements View.OnClickListener {
+public abstract class AuthActivity extends AppCompatActivity implements View.OnClickListener, UserMessageShower {
 
     private AuthViewModel authViewModel;
     private @IdRes
@@ -66,7 +67,7 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
             } else if (loginResult.getSuccess() != null) {
                 updateUiWithUser(loginResult.getSuccess());
                 final JWT jwt = loginResult.getSuccess().getJwt();
-                SessionManager.startUserSession(getApplicationContext(), jwt.toString(), jwt.getExpiresAt().getTime());
+                SessionManager.getInstance().startUserSession(ApplicationContext.get(), jwt);
                 goToMain(jwt);
             }
         });
@@ -128,42 +129,33 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (isSessionActive()) {
-            final String token = SessionManager.getUserToken(getApplicationContext());
-            JWT jwt = new JWT(token);
-            goToMain(jwt);
-        }
-        // move to setupUI
-        setContentView(layout);
-        // mist be the first line in code
+        // must be the first line in code
         ApplicationContext.getInstance().init(getApplicationContext());
-        setupUI();
+        super.onCreate(savedInstanceState);
+        // todo for dev purposes, uncomment for making signing in required all the time as token get cleaned
+        //SessionManager.getInstance().endUserSession(ApplicationContext.get());
+        final JWT token = SessionManager.getInstance().getUserToken(getApplicationContext()).orElse(null);
+        if (isSessionActive(token)) {
+            goToMain(token);
+        } else {
+            SessionManager.getInstance().endUserSession(ApplicationContext.get());
+            // setup signIn/signUp UI
+            setContentView(layout);
+            setupUI();
+        }
     }
 
-    private boolean isSessionActive() {
-        final Date now = new Date(System.currentTimeMillis());
-        return SessionManager.isSessionActive(now, getApplicationContext());
+    private boolean isSessionActive(JWT token) {
+        return Objects.nonNull(token) && !token.isExpired(0);
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
         String welcome = String.format(getString(R.string.welcome), model.getDisplayName());
-        Toast.makeText(ApplicationContext.get(), welcome, Toast.LENGTH_LONG).show();
+        showUserMessage(welcome);
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(ApplicationContext.get(), errorString, Toast.LENGTH_SHORT).show();
+    private void showLoginFailed(@StringRes Integer errorRes) {
+        showUserMessage(errorRes);
     }
 }
