@@ -7,6 +7,7 @@ import core.activities.R;
 import core.activities.data.AuthRepository;
 import core.activities.data.Result;
 import core.activities.data.model.LoggedInUser;
+import core.activities.ui.shared.Async;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -22,15 +23,13 @@ public class AuthViewModel extends ViewModel {
     @Getter
     MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     AuthRepository authRepository;
-    ExecutorService executorService;
 
     AuthViewModel(AuthRepository authRepository) {
         this.authRepository = authRepository;
-        this.executorService = Executors.newSingleThreadExecutor();
     }
 
     private void auth(Supplier<Result> auth) {
-        executorService.execute(() -> {
+        Async.execute(() -> {
             Result result = auth.get();
             LoginResult lr;
             if (result instanceof Result.Success) {

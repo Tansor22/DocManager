@@ -18,6 +18,7 @@ import okio.Buffer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 
 import static api.clients.middleware.HLFMiddlewareEndpoints.*;
@@ -28,7 +29,9 @@ public class HLFMiddlewareAPIClient implements Traceable {
     OkHttpClient client;
     ObjectMapper jsonMapper = new ObjectMapper()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    static MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    static MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
+    static String X_ACCESS_TOKEN_HEADER = "x-access-token";
+
 
     private static HLFMiddlewareAPIClient INSTANCE;
 
@@ -52,40 +55,54 @@ public class HLFMiddlewareAPIClient implements Traceable {
         client = UtilsTLS.getSSLClient(resources);
     }
 
-    public NewDocResponse newDoc(NewDocRequest request) throws HLFException {
-        return executeRequest(request, NEW_DOC, NewDocResponse.class);
+    public NewDocResponse newDoc(NewDocRequest request, String token) throws HLFException {
+        return executeRequest(prepareAndLogRequest(request, NEW_DOC,
+                Headers.of(X_ACCESS_TOKEN_HEADER, token)), NewDocResponse.class);
     }
 
-    public GetDocsResponse getDocs(GetDocsRequest request) throws HLFException {
-
-        return executeRequest(request, GET_DOCS, GetDocsResponse.class);
+    public GetDocsResponse getDocs(GetDocsRequest request, String token) throws HLFException {
+        return executeRequest(prepareAndLogRequest(request, GET_DOCS,
+                Headers.of(X_ACCESS_TOKEN_HEADER, token)), GetDocsResponse.class);
     }
 
-    public SignDocResponse signDoc(SignDocRequest request) throws HLFException {
-        return executeRequest(request, SIGN_DOC, SignDocResponse.class);
+    public SignDocResponse signDoc(SignDocRequest request, String token) throws HLFException {
+        return executeRequest(prepareAndLogRequest(request, SIGN_DOC,
+                Headers.of(X_ACCESS_TOKEN_HEADER, token)), SignDocResponse.class);
     }
 
     public SignUpResponse signUp(SignUpRequest request) throws HLFException {
-        return executeRequest(request, SIGN_UP, SignUpResponse.class);
+        return executeRequest(prepareAndLogRequest(request, SIGN_UP), SignUpResponse.class);
     }
 
     public SignInResponse signIn(SignInRequest request) throws HLFException {
-        return executeRequest(request, SIGN_IN, SignInResponse.class);
+        return executeRequest(prepareAndLogRequest(request, SIGN_IN), SignInResponse.class);
     }
 
 
+    private Request prepareAndLogRequest(Object request, HLFMiddlewareEndpoints endpoint) {
+        return prepareAndLogRequest(request, endpoint, null);
+    }
+
     @SneakyThrows(IOException.class)
-    private <T> T executeRequest(Object request, HLFMiddlewareEndpoints endpoint, Class<T> responseEntity) throws HLFException {
-        RequestBody body = RequestBody.create(JSON, jsonMapper.writeValueAsString(request));
-        Request httpsRequest = new Request.Builder()
+    private Request prepareAndLogRequest(Object request, HLFMiddlewareEndpoints endpoint, Headers headers) {
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE, jsonMapper.writeValueAsString(request));
+        Request.Builder httpsRequestBuilder = new Request.Builder()
                 .url(endpoint.getUrlForEndpoint(middlewareUrl))
-                .post(body)
-                .build();
+                .post(body);
+        if (Objects.nonNull(headers)) {
+            httpsRequestBuilder.headers(headers);
+        }
+        Request httpsRequest = httpsRequestBuilder.build();
         trace("Network request  %s\n" +
                 "Body", httpsRequest.url(), bodyToString(httpsRequest));
-        try (Response response = client.newCall(httpsRequest).execute()) {
+        return httpsRequest;
+    }
+
+    @SneakyThrows(IOException.class)
+    private <T> T executeRequest(Request request, Class<T> responseEntity) throws HLFException {
+        try (Response response = client.newCall(request).execute()) {
             if (response.body() == null) {
-                throw new IOException("No response body got from " + endpoint.getEndpointPath());
+                throw new IOException("No response body got from " + request.url());
             }
             final JsonNode json = jsonMapper.readTree(response.body().byteStream());
             final String payload = json.get("payload").toString();

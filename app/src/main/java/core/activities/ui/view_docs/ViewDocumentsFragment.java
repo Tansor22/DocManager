@@ -12,12 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import core.activities.R;
+import core.activities.ui.shared.ErrorShower;
 import core.shared.Traceable;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Objects;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ViewDocumentsFragment extends Fragment implements Traceable {
+public class ViewDocumentsFragment extends Fragment implements Traceable, ErrorShower {
     ViewDocumentsModel model;
     RecyclerView recyclerView;
 
@@ -41,7 +44,13 @@ public class ViewDocumentsFragment extends Fragment implements Traceable {
 
         // model configuring
         model = new ViewModelProvider(this).get(ViewDocumentsModel.class);
-        model.getDocs().observe(getViewLifecycleOwner(), adapter::setDocs);
+        model.getDocsResult().observe(getViewLifecycleOwner(), getDocsResult -> {
+            if (Objects.nonNull(getDocsResult.getDocuments())) {
+                adapter.setDocs(getDocsResult.getDocuments());
+            } else if (Objects.nonNull(getDocsResult.getError())) {
+                showError(getDocsResult.getError());
+            }
+        });
         return root;
     }
 }

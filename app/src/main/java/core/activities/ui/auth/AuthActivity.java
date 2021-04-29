@@ -105,7 +105,6 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
             String login = loginEditText.getText().toString();
             String pass = passEditText.getText().toString();
             auth(login, pass);
-
         });
         changeFormTextView.setOnClickListener(this);
         closeImageView.setOnClickListener(self -> finish());
@@ -122,6 +121,7 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
     private void goToMain(JWT jwt) {
         setResult(Activity.RESULT_OK);
         Intent intent = new Intent(this, MainActivity.class);
+        // todo no need to pass jwt
         intent.putExtra("jwt", jwt);
         finish();
         startActivity(intent);
@@ -141,16 +141,16 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // move to setupUI
-        setContentView(layout);
-        // mist be the first line in code
-        ApplicationContext.getInstance().init(getApplicationContext());
-        setupUI();
         if (isSessionActive()) {
             final String token = SessionManager.getUserToken(getApplicationContext());
             JWT jwt = new JWT(token);
             goToMain(jwt);
         }
+        // move to setupUI
+        setContentView(layout);
+        // mist be the first line in code
+        ApplicationContext.getInstance().init(getApplicationContext());
+        setupUI();
     }
 
     private boolean isSessionActive() {
