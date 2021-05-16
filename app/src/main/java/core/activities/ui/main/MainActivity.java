@@ -21,27 +21,6 @@ public class MainActivity extends AppCompatActivity implements Traceable {
 
     private AppBarConfiguration appBarConfiguration;
 
-    /*
-          Button accessButton = findViewById(R.id.accessButton);
-          // init API client
-          hlfMiddlewareAPIClient = new HLFMiddlewareAPIClient(getResources());
-          resultLabel = findViewById(R.id.resultLabel);
-          accessButton.setOnClickListener(e ->
-                  new Thread(() -> {
-                      final GetDocsResponse response =
-                              hlfMiddlewareAPIClient.getDocs(GetDocsRequest.builder()
-                                      .orgName("sampleOrg")
-                                      .build());
-                  *//*    final NewDocResponse response = hlfMiddlewareAPIClient.newDoc(NewDocRequest.builder()
-                            .org("sampleOrg")
-                            .content("Sample content")
-                            .signRequired("DEAN")
-                            .signRequired("STUDENT")
-                            .signRequired("DOG_OF_THE_STUDENT")
-                            .build());*//*
-                    runOnUiThread(() -> resultLabel.setText("ID got: " + response.toString()));
-                }).start()
-        );*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

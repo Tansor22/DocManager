@@ -5,6 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
+                android:id="@+id/navDocsToSign"
+                android:icon="@drawable/ic_menu_docs_to_sign"
+                android:title="@string/menu_docs_to_sign"/>
+        <item
                 android:id="@+id/navDocsView"
                 android:icon="@drawable/ic_menu_view_docs"
                 android:title="@string/menu_docs_view"/>
@@ -12,5 +16,9 @@
                 android:id="@+id/navCreateDoc"
                 android:icon="@drawable/ic_menu_create_doc"
                 android:title="@string/menu_create_doc"/>
+        <item
+                android:id="@+id/navSettings"
+                android:icon="@drawable/ic_menu_settings"
+                android:title="@string/menu_settings"/>
     </group>
 </menu>

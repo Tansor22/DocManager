@@ -9,9 +9,10 @@
     <string name="nav_header_title">@string/app_name</string>
     <string name="nav_header_subtitle">lyutyy.mail@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Настройки</string>
+    <string name="menu_settings">Настройки</string>
 
     <string name="menu_docs_view">Мои документы</string>
+    <string name="menu_docs_to_sign">Документы на подпись</string>
     <string name="menu_create_doc">Новый документ</string>
     <string name="placeholder">placeholder</string>
     <string name="date_sample">20.02.21</string>
@@ -36,4 +37,7 @@
     <string name="ok">Ок</string>
     <string name="action_approve">Одобрить</string>
     <string name="action_reject">Отклонить</string>
+    <string name="reason_for_reject">Укажите причину отказа</string>
+    <string name="cancel">Отмена</string>
+    <string name="submit_reject">Подтвердить отказ</string>
 </resources>
