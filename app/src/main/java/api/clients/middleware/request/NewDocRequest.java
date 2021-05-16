@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 @Data
 public class NewDocRequest {
+    // todo develop
     String org;
     String content;
     @Singular(value = "signRequired")

@@ -1,5 +1,6 @@
 package core.activities.ui.view_docs;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import api.clients.middleware.entity.Document;
 import core.activities.R;
+import core.activities.ui.doc_details.DocDetailsActivity;
+import core.shared.Traceable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -17,7 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHolder> {
+public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHolder> implements Traceable {
     List<Document> _docs;
 
     @NonNull
@@ -30,7 +33,13 @@ public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHold
 
     @Override
     public void onBindViewHolder(@NonNull DocumentsViewHolder holder, int position) {
-        holder.updateUI(_docs.get(position));
+        final Document document = _docs.get(position);
+        holder.itemView.setOnClickListener(self -> {
+            Intent intent = new Intent(holder.itemView.getContext(), DocDetailsActivity.class);
+            intent.putExtra("doc", document);
+            holder.itemView.getContext().startActivity(intent);
+        });
+        holder.updateUI(document);
     }
 
     public void setDocs(List<Document> docs) {

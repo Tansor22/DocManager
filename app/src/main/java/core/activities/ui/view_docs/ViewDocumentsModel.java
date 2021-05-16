@@ -7,8 +7,6 @@ import api.clients.middleware.HLFMiddlewareAPIClient;
 import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
 import api.clients.middleware.request.GetDocsRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import core.activities.R;
 import core.activities.ui.shared.Async;
 import core.activities.ui.shared.TokenedModel;
@@ -40,12 +38,6 @@ public class ViewDocumentsModel extends TokenedModel implements Traceable {
                         .documents(Collections.emptyList())
                         .build()
         );
-        final List<Document> fakeDocuments = getFakeDocuments();
-        try {
-            trace("Fake documents = %s", new ObjectMapper().writeValueAsString(fakeDocuments));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
         Async.execute(this::getDocuments);
     }
 

@@ -7,6 +7,8 @@ import core.shared.Tagged;
 
 public class CreateDocumentModel extends ViewModel implements Tagged {
 
+    //todo stub implementation
+
     private final MutableLiveData<String> text;
 
     public CreateDocumentModel() {

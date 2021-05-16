@@ -2,14 +2,12 @@ package api.clients.middleware;
 
 import android.content.res.Resources;
 import api.clients.UtilsTLS;
-import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
 import api.clients.middleware.request.*;
 import api.clients.middleware.response.*;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import core.shared.ApplicationContext;
 import core.shared.Traceable;
 import lombok.AccessLevel;
@@ -20,7 +18,6 @@ import okio.Buffer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -30,8 +27,11 @@ import static api.clients.middleware.HLFMiddlewareEndpoints.*;
 public class HLFMiddlewareAPIClient implements Traceable {
     String middlewareUrl;
     OkHttpClient client;
-    ObjectMapper jsonMapper = new ObjectMapper()
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .serializeNulls()
+            .disableHtmlEscaping()
+            .create();
     static MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
     static String X_ACCESS_TOKEN_HEADER = "x-access-token";
 
@@ -88,7 +88,7 @@ public class HLFMiddlewareAPIClient implements Traceable {
 
     @SneakyThrows(IOException.class)
     private Request prepareAndLogRequest(Object request, HLFMiddlewareEndpoints endpoint, Headers headers) {
-        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE, jsonMapper.writeValueAsString(request));
+        RequestBody body = RequestBody.create(JSON_MEDIA_TYPE, gson.toJson(request));
         Request.Builder httpsRequestBuilder = new Request.Builder()
                 .url(endpoint.getUrlForEndpoint(middlewareUrl))
                 .post(body);
@@ -107,15 +107,15 @@ public class HLFMiddlewareAPIClient implements Traceable {
             if (response.body() == null) {
                 throw new IOException("No response body got from " + request.url());
             }
-            final JsonNode json = jsonMapper.readTree(response.body().byteStream());
-            final String payload = json.get("payload").toString();
+            final JsonObject json = gson.fromJson(response.body().charStream(), JsonObject.class);
+            final JsonObject payload = json.getAsJsonObject("payload");
             if (response.code() != 200) {
                 error("Error response %s", payload);
-                final ErrorResponse errorResponse = jsonMapper.readValue(payload, ErrorResponse.class);
+                final ErrorResponse errorResponse = gson.fromJson(payload, ErrorResponse.class);
                 throw HLFException.of(errorResponse);
             }
             trace("Response %s", payload);
-            return jsonMapper.readValue(payload, responseEntity);
+            return gson.fromJson(payload, responseEntity);
         }
     }
 
