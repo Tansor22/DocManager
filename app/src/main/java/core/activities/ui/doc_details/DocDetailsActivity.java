@@ -2,7 +2,7 @@ package core.activities.ui.doc_details;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
+import android.view.animation.*;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +22,7 @@ import java.util.List;
 public class DocDetailsActivity extends AppCompatActivity implements Traceable {
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,21 +39,21 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
             @Override
             public void onCardSwiped(Direction direction) {
                 trace("onCardSwiped: p=" + manager.getTopPosition() + " d=" + direction);
-                if (direction == Direction.Right){
+                if (direction == Direction.Right) {
                     Toast.makeText(DocDetailsActivity.this, "Direction Right", Toast.LENGTH_SHORT).show();
                 }
-                if (direction == Direction.Top){
+                if (direction == Direction.Top) {
                     Toast.makeText(DocDetailsActivity.this, "Direction Top", Toast.LENGTH_SHORT).show();
                 }
-                if (direction == Direction.Left){
+                if (direction == Direction.Left) {
                     Toast.makeText(DocDetailsActivity.this, "Direction Left", Toast.LENGTH_SHORT).show();
                 }
-                if (direction == Direction.Bottom){
+                if (direction == Direction.Bottom) {
                     Toast.makeText(DocDetailsActivity.this, "Direction Bottom", Toast.LENGTH_SHORT).show();
                 }
 
                 // Paginating
-                if (manager.getTopPosition() == adapter.getItemCount() - 5){
+                if (manager.getTopPosition() == adapter.getItemCount() - 5) {
                     paginate();
                 }
 
@@ -84,12 +85,12 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
         manager.setVisibleCount(3);
         manager.setTranslationInterval(8.0f);
         manager.setScaleInterval(0.95f);
-        manager.setSwipeThreshold(0.3f);
-        manager.setMaxDegree(20.0f);
-        manager.setDirections(Direction.FREEDOM);
+        manager.setSwipeThreshold(0.4f);
+        manager.setMaxDegree(200.0f);
+        manager.setDirections(Direction.HORIZONTAL);
         manager.setCanScrollVertical(false);
         manager.setSwipeableMethod(SwipeableMethod.Manual);
-        manager.setOverlayInterpolator(new LinearInterpolator());
+        manager.setOverlayInterpolator(new OvershootInterpolator(4.f));
         adapter = new CardStackAdapter(addList());
         cardStackView.setLayoutManager(manager);
         cardStackView.setAdapter(adapter);
@@ -108,9 +109,9 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
 
     private List<SwipeItemModel> addList() {
         List<SwipeItemModel> items = new ArrayList<>();
-        items.add(new SwipeItemModel(R.drawable.sample1, "Markonah", "24", "Jember"));
+        items.add(new SwipeItemModel(R.drawable.sample1, "Markonah", "24", "Jonggfddfdfdfdfdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddol"));
         items.add(new SwipeItemModel(R.drawable.sample2, "Marpuah", "20", "Malang"));
-        items.add(new SwipeItemModel(R.drawable.sample3, "Sukijah", "27", "Jonggol"));
+        items.add(new SwipeItemModel(R.drawable.sample3, "Sukijah", "27", "Jonggfddddddddddddddddddddddddddddddddddddddddddddddol"));
         items.add(new SwipeItemModel(R.drawable.sample4, "Markobar", "19", "Bandung"));
         items.add(new SwipeItemModel(R.drawable.sample5, "Marmut", "25", "Hutan"));
 
