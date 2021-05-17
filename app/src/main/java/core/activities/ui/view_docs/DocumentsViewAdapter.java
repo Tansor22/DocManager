@@ -1,6 +1,7 @@
 package core.activities.ui.view_docs;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -36,7 +39,8 @@ public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHold
         final Document document = _docs.get(position);
         holder.itemView.setOnClickListener(self -> {
             Intent intent = new Intent(holder.itemView.getContext(), DocDetailsActivity.class);
-            intent.putExtra("doc", document);
+            intent.putParcelableArrayListExtra("docs", new ArrayList<>(_docs));
+            intent.putExtra("position", position);
             holder.itemView.getContext().startActivity(intent);
         });
         holder.updateUI(document);

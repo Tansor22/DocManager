@@ -10,83 +10,61 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import api.clients.middleware.entity.Document;
+import api.clients.middleware.exception.HLFException;
 import com.yuyakaido.android.cardstackview.*;
 import core.activities.R;
 import core.activities.ui.doc_details.model.SignDocModel;
-import core.activities.ui.doc_details.model.SignDocResult;
-import core.activities.ui.doc_details.swipe.CardStackAdapter;
+import core.activities.ui.doc_details.model.Result;
+import core.activities.ui.doc_details.swipe.DocStackAdapter;
+import core.activities.ui.doc_details.swipe.DocStackListener;
 import core.activities.ui.doc_details.swipe.SwipeItemModel;
+import core.activities.ui.shared.UserMessageShower;
 import core.shared.Traceable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class DocDetailsActivity extends AppCompatActivity implements Traceable {
+public class DocDetailsActivity extends AppCompatActivity implements Traceable, UserMessageShower {
     private CardStackLayoutManager manager;
-    private CardStackAdapter adapter;
+    private DocStackAdapter adapter;
     private CardStackView cardStackView;
     private SignDocModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Document doc = getIntent().getParcelableExtra("doc");
-        trace("Doc received = %s", doc.toString());
+        final List<Document> docs = getIntent().getParcelableArrayListExtra("docs");
+        final int position = getIntent().getIntExtra("position", 0);
+        //trace("Docs received = %s", docs.toString());
+        //trace("Position received = %s", position);
         setContentView(R.layout.activity_doc_details);
         cardStackView = findViewById(R.id.cardStackView);
         model = new ViewModelProvider(this).get(SignDocModel.class);
         model.getResult().observe(this, self -> {
-            trace(self.getApprove() != null ? self.getApprove().getClass().getSimpleName() : self.getReject().getClass().getSimpleName());
-            if (self.getReject() != null) {
-                trace("Reason " + self.getReject().getReason());
+            // todo rename to processDoc
+            try {
+                model.traceResult();
+            } catch (HLFException e) {
+                cardStackView.rewind();
+                showUserMessage(R.string.unexpected_error);
             }
             // show hint if it was the last card swiped
             if (manager.getTopPosition() == adapter.getItemCount()) {
                 findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);
             }
         });
-        manager = new CardStackLayoutManager(this, new CardStackListener() {
-            @Override
-            public void onCardDragging(Direction direction, float ratio) {
-                //trace("onCardDragging: d=" + direction.name() + " ratio=" + ratio);
+        manager = new CardStackLayoutManager(this, (DocStackListener) direction -> {
+            final SwipeItemModel docSwiped = adapter.getItems().get(manager.getTopPosition() - 1);
+            if (direction == Direction.Right) {
+                processApprove(docSwiped);
             }
-
-            @Override
-            public void onCardSwiped(Direction direction) {
-                trace("onCardSwiped: p=" + manager.getTopPosition() + " d=" + direction);
-                if (direction == Direction.Right) {
-                    processApprove();
-                }
-                if (direction == Direction.Left) {
-                    processReject();
-                }
-            }
-
-            @Override
-            public void onCardRewound() {
-                trace("onCardRewound: " + manager.getTopPosition());
-            }
-
-            @Override
-            public void onCardCanceled() {
-                trace("onCardRewound: " + manager.getTopPosition());
-            }
-
-            @Override
-            public void onCardAppeared(View view, int position) {
-                TextView tv = view.findViewById(R.id.item_name);
-                trace("onCardAppeared: " + position + ", nama: " + tv.getText());
-            }
-
-            @Override
-            public void onCardDisappeared(View view, int position) {
-                TextView tv = view.findViewById(R.id.item_name);
-                trace("onCardDisAppeared: " + position + ", nama: " + tv.getText());
+            if (direction == Direction.Left) {
+                processReject(docSwiped);
             }
         });
         manager.setStackFrom(StackFrom.Left);
@@ -104,15 +82,17 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
                 .setInterpolator(new DecelerateInterpolator())
                 .build());
         manager.setOverlayInterpolator(new OvershootInterpolator(4.f));
-        adapter = new CardStackAdapter(addList());
+        adapter = new DocStackAdapter(docs.stream().map( doc ->
+                new SwipeItemModel(R.drawable.doc_bg, doc.getTitle(), doc.getDate(), doc.getStatus())
+        ).collect(Collectors.toList()));
         cardStackView.setLayoutManager(manager);
         cardStackView.setAdapter(adapter);
         cardStackView.setItemAnimator(new DefaultItemAnimator());
     }
 
-    private void processApprove() {
+    private void processApprove(SwipeItemModel cardSwiped) {
         // call fabric sign doc by user
-        model.getResult().setValue(new SignDocResult(new SignDocResult.Approve()));
+        model.getResult().setValue(new Result.Approve(cardSwiped));
     }
 
     private EditText buildReasonForRejectField() {
@@ -135,33 +115,23 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
         return input;
     }
 
-    private void processReject() {
+    private void processReject(SwipeItemModel cardSwiped) {
         final EditText input = buildReasonForRejectField();
         new AlertDialog.Builder(this)
                 .setTitle(R.string.reason_for_reject)
                 .setView(input)
-                .setPositiveButton(R.string.submit_reject, (dialog, ignored) -> {
-                    // call fabric reject doc ???
-                    model.getResult().setValue(new SignDocResult(new SignDocResult.Reject(input.getText().toString())));
-                    trace("Comment: %s", input.getText().toString());
-                })
+                .setPositiveButton(R.string.submit_reject, (dialog, ignored) -> model.getResult().setValue(new Result.Reject(cardSwiped, input.getText().toString())))
                 .setNegativeButton(R.string.cancel, (dialog, ignored) -> {
                     cardStackView.rewind();
                     dialog.cancel();
-                }).show();
+                }).show().setCanceledOnTouchOutside(false);
     }
 
     private List<SwipeItemModel> addList() {
         List<SwipeItemModel> items = new ArrayList<>();
-        items.add(new SwipeItemModel(R.drawable.sample1, "Markonah", "24", "Jonggfddfdfdfdfdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddol"));
+        items.add(new SwipeItemModel(R.drawable.sample1, "Markonah", "24", "Jongdol"));
         items.add(new SwipeItemModel(R.drawable.sample2, "Marpuah", "20", "Malang"));
-        items.add(new SwipeItemModel(R.drawable.sample3, "Sukijah", "27", "Jonggfddddddddddddddddddddddddddddddddddddddddddddddol"));
-        items.add(new SwipeItemModel(R.drawable.sample4, "Markobar", "19", "Bandung"));
-        items.add(new SwipeItemModel(R.drawable.sample5, "Marmut", "25", "Hutan"));
-
-        items.add(new SwipeItemModel(R.drawable.sample1, "Markonah", "24", "Jember"));
-        items.add(new SwipeItemModel(R.drawable.sample2, "Marpuah", "20", "Malang"));
-        items.add(new SwipeItemModel(R.drawable.sample3, "Sukijah", "27", "Jonggol"));
+        items.add(new SwipeItemModel(R.drawable.sample3, "Sukijah", "27", "Jongdol"));
         items.add(new SwipeItemModel(R.drawable.sample4, "Markobar", "19", "Bandung"));
         items.add(new SwipeItemModel(R.drawable.sample5, "Marmut", "25", "Hutan"));
         return items;

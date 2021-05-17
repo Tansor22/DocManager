@@ -12,11 +12,11 @@ import core.activities.R;
 
 import java.util.List;
 
-public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.ViewHolder> {
+public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHolder> {
 
     private List<SwipeItemModel> items;
 
-    public CardStackAdapter(List<SwipeItemModel> items) {
+    public DocStackAdapter(List<SwipeItemModel> items) {
         this.items = items;
     }
 
@@ -44,9 +44,9 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.item_image);
-            nama = itemView.findViewById(R.id.item_name);
-            usia = itemView.findViewById(R.id.item_age);
-            kota = itemView.findViewById(R.id.item_city);
+            nama = itemView.findViewById(R.id.item_title);
+            usia = itemView.findViewById(R.id.item_date);
+            kota = itemView.findViewById(R.id.item_status);
         }
 
         void setData(SwipeItemModel data) {

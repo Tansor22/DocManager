@@ -9,190 +9,40 @@
         app:cardUseCompatPadding="true"
         app:cardPreventCornerOverlap="false"
         app:cardCornerRadius="8dp"
-        app:cardBackgroundColor="@android:color/white">
+        app:cardBackgroundColor="@android:color/darker_gray">
 
     <ImageView
             android:id="@+id/item_image"
+            android:src="@drawable/doc_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"/>
     <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
         <LinearLayout
                 android:orientation="vertical"
+                android:layout_gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:padding="16dp"
                 android:layout_margin="16dp"
                 android:background="@drawable/gradation_black">
 
             <TextView
-                    android:id="@+id/item_name"
+                    android:id="@+id/item_title"
+                    android:text="@string/doc_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
-                    android:textColor="@android:color/white"
-                    android:textSize="26sp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="Sample"
                     android:textColor="@android:color/white"
                     android:textSize="26sp"/>
 
 
             <TextView
-                    android:id="@+id/item_age"
+                    android:id="@+id/item_date"
+                    android:text="@string/doc_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -200,7 +50,8 @@
                     android:textSize="18sp"/>
 
             <TextView
-                    android:id="@+id/item_city"
+                    android:id="@+id/item_status"
+                    android:text="@string/doc_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"

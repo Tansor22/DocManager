@@ -41,4 +41,7 @@
     <string name="cancel">Отмена</string>
     <string name="submit_reject">Подтвердить отказ</string>
     <string name="no_more_docs">У вас больше нет документов на подпись.</string>
+    <string name="doc_title">Doc Title</string>
+    <string name="doc_date">Doc date</string>
+    <string name="doc_status">Doc status</string>
 </resources>
