@@ -5,10 +5,21 @@
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
                                                    tools:context=".ui.doc_details.DocDetailsActivity">
-
+    <!--Z-index of above elements is less than of those which specified lower in xml definition-->
+    <TextView
+            android:id="@+id/noMoreDocsHint"
+            android:text="@string/no_more_docs"
+            android:textSize="@dimen/t_16sp"
+            android:textStyle="bold|italic"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="match_parent"/>
+    <!--Will be in front of noMoreDocsHint text view-->
     <com.yuyakaido.android.cardstackview.CardStackView
             android:id="@+id/cardStackView"
             android:layout_width="0dp"
+            tools:listitem="@layout/item_card"
             android:layout_height="0dp"
             android:padding="8dp"
             android:clipToPadding="false"

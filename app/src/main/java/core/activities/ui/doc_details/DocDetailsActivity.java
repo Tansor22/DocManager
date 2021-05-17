@@ -12,10 +12,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import api.clients.middleware.entity.Document;
 import com.yuyakaido.android.cardstackview.*;
 import core.activities.R;
+import core.activities.ui.doc_details.model.SignDocModel;
+import core.activities.ui.doc_details.model.SignDocResult;
 import core.activities.ui.doc_details.swipe.CardStackAdapter;
 import core.activities.ui.doc_details.swipe.SwipeItemModel;
 import core.shared.Traceable;
@@ -27,6 +30,7 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
     private CardStackView cardStackView;
+    private SignDocModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,17 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
         trace("Doc received = %s", doc.toString());
         setContentView(R.layout.activity_doc_details);
         cardStackView = findViewById(R.id.cardStackView);
+        model = new ViewModelProvider(this).get(SignDocModel.class);
+        model.getResult().observe(this, self -> {
+            trace(self.getApprove() != null ? self.getApprove().getClass().getSimpleName() : self.getReject().getClass().getSimpleName());
+            if (self.getReject() != null) {
+                trace("Reason " + self.getReject().getReason());
+            }
+            // show hint if it was the last card swiped
+            if (manager.getTopPosition() == adapter.getItemCount()) {
+                findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);
+            }
+        });
         manager = new CardStackLayoutManager(this, new CardStackListener() {
             @Override
             public void onCardDragging(Direction direction, float ratio) {
@@ -97,11 +112,10 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
 
     private void processApprove() {
         // call fabric sign doc by user
+        model.getResult().setValue(new SignDocResult(new SignDocResult.Approve()));
     }
 
-    private void processReject() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.reason_for_reject);
+    private EditText buildReasonForRejectField() {
         // input field configuring
         final EditText input = new EditText(this);
         input.setSingleLine(false);
@@ -118,17 +132,23 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable {
         input.setVerticalScrollBarEnabled(true);
         input.setMovementMethod(ScrollingMovementMethod.getInstance());
         input.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-        builder.setView(input);
+        return input;
+    }
 
-        builder.setPositiveButton(R.string.submit_reject, (dialog, ignored) ->
-                // call fabric reject doc ???
-                trace("Comment: %s", input.getText().toString()));
-        builder.setNegativeButton(R.string.cancel, (dialog, ignored) -> {
-            cardStackView.rewind();
-            dialog.cancel();
-        });
-
-        builder.show();
+    private void processReject() {
+        final EditText input = buildReasonForRejectField();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.reason_for_reject)
+                .setView(input)
+                .setPositiveButton(R.string.submit_reject, (dialog, ignored) -> {
+                    // call fabric reject doc ???
+                    model.getResult().setValue(new SignDocResult(new SignDocResult.Reject(input.getText().toString())));
+                    trace("Comment: %s", input.getText().toString());
+                })
+                .setNegativeButton(R.string.cancel, (dialog, ignored) -> {
+                    cardStackView.rewind();
+                    dialog.cancel();
+                }).show();
     }
 
     private List<SwipeItemModel> addList() {

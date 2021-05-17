@@ -40,4 +40,5 @@
     <string name="reason_for_reject">Укажите причину отказа</string>
     <string name="cancel">Отмена</string>
     <string name="submit_reject">Подтвердить отказ</string>
+    <string name="no_more_docs">У вас больше нет документов на подпись.</string>
 </resources>
