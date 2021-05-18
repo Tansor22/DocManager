@@ -40,7 +40,12 @@
     <string name="reason_for_reject">Укажите причину отказа</string>
     <string name="cancel">Отмена</string>
     <string name="submit_reject">Подтвердить отказ</string>
+    <string name="apply">Применить</string>
+    <string name="close">Закрыть</string>
     <string name="no_more_docs">У вас больше нет документов на подпись.</string>
+    <string name="configure_filters_title">Настройка отображения документов</string>
+    <string name="is_completed_docs_shown">Показывать завершенные документы</string>
+    <string name="is_rejected_docs_shown">Показывать отклоненные документы</string>
     <string name="doc_title">Doc Title</string>
     <string name="doc_date">Doc date</string>
     <string name="doc_status">Doc status</string>
