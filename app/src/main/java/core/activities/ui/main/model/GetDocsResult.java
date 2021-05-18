@@ -1,4 +1,4 @@
-package core.activities.ui.view_docs.entity;
+package core.activities.ui.main.model;
 
 import androidx.annotation.Nullable;
 import api.clients.middleware.entity.Document;

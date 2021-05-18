@@ -1,4 +1,4 @@
-package core.activities.ui.doc_details.model;
+package core.activities.ui.docs_to_sign.model;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -17,7 +17,7 @@ public class SignDocModel extends ViewModel implements Traceable {
         result = new MutableLiveData<>();
     }
 
-    public void traceResult() throws HLFException {
+    public void processDoc() throws HLFException {
         // call fabric functions
         final Result result = Objects.requireNonNull(this.result.getValue());
         trace(result.approved() ? "Approved" : result.rejected() ? "Rejected" : "Unknown status");

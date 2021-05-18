@@ -1,64 +1,65 @@
-package core.activities.ui.doc_details;
+package core.activities.ui.docs_to_sign;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
 import com.yuyakaido.android.cardstackview.*;
 import core.activities.R;
-import core.activities.ui.doc_details.model.SignDocModel;
-import core.activities.ui.doc_details.model.Result;
-import core.activities.ui.doc_details.swipe.DocStackAdapter;
-import core.activities.ui.doc_details.swipe.DocStackListener;
-import core.activities.ui.doc_details.swipe.SwipeItemModel;
+import core.activities.ui.docs_to_sign.model.Result;
+import core.activities.ui.docs_to_sign.model.SignDocModel;
+import core.activities.ui.docs_to_sign.swipe.DocStackAdapter;
+import core.activities.ui.docs_to_sign.swipe.DocStackListener;
+import core.activities.ui.docs_to_sign.swipe.SwipeItemModel;
+import core.activities.ui.main.MainActivity;
 import core.activities.ui.shared.UserMessageShower;
 import core.shared.Traceable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class DocDetailsActivity extends AppCompatActivity implements Traceable, UserMessageShower {
+public class DocsToSignFragment extends Fragment implements Traceable, UserMessageShower {
     private CardStackLayoutManager manager;
     private DocStackAdapter adapter;
     private CardStackView cardStackView;
     private SignDocModel model;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final List<Document> docs = getIntent().getParcelableArrayListExtra("docs");
-        final int position = getIntent().getIntExtra("position", 0);
-        //trace("Docs received = %s", docs.toString());
-        //trace("Position received = %s", position);
-        setContentView(R.layout.activity_doc_details);
-        cardStackView = findViewById(R.id.cardStackView);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_docs_to_sign, container, false);
+        cardStackView = root.findViewById(R.id.cardStackView);
         model = new ViewModelProvider(this).get(SignDocModel.class);
-        model.getResult().observe(this, self -> {
+        model.getResult().observe(getViewLifecycleOwner(), self -> {
             // todo rename to processDoc
             try {
-                model.traceResult();
+                model.processDoc();
             } catch (HLFException e) {
                 cardStackView.rewind();
                 showUserMessage(R.string.unexpected_error);
             }
             // show hint if it was the last card swiped
             if (manager.getTopPosition() == adapter.getItemCount()) {
-                findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);
+                root.findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);
             }
         });
-        manager = new CardStackLayoutManager(this, (DocStackListener) direction -> {
+        manager = new CardStackLayoutManager(requireContext(), (DocStackListener) direction -> {
             final SwipeItemModel docSwiped = adapter.getItems().get(manager.getTopPosition() - 1);
             if (direction == Direction.Right) {
                 processApprove(docSwiped);
@@ -82,12 +83,23 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable, 
                 .setInterpolator(new DecelerateInterpolator())
                 .build());
         manager.setOverlayInterpolator(new OvershootInterpolator(4.f));
-        adapter = new DocStackAdapter(docs.stream().map( doc ->
-                new SwipeItemModel(R.drawable.doc_bg, doc.getTitle(), doc.getDate(), doc.getStatus())
-        ).collect(Collectors.toList()));
+        // docs binding
+        ((MainActivity) requireActivity()).getModel().getDocsResult().observe(getViewLifecycleOwner(), getDocsResult -> {
+            if (Objects.nonNull(getDocsResult.getDocuments())) {
+                // todo filter docs bu signs required by user logged in
+                adapter = new DocStackAdapter(Objects.requireNonNull(getDocsResult.getDocuments()).stream().map(doc ->
+                        new SwipeItemModel(R.drawable.doc_bg, doc.getTitle(), doc.getDate(), doc.getStatus())).collect(Collectors.toList()));
+                cardStackView.setAdapter(adapter);
+                if (adapter.getItemCount() == 0) {
+                    root.findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);
+                }
+            } else if (Objects.nonNull(getDocsResult.getError())) {
+                showUserMessage(getDocsResult.getError());
+            }
+        });
         cardStackView.setLayoutManager(manager);
-        cardStackView.setAdapter(adapter);
         cardStackView.setItemAnimator(new DefaultItemAnimator());
+        return root;
     }
 
     private void processApprove(SwipeItemModel cardSwiped) {
@@ -97,7 +109,7 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable, 
 
     private EditText buildReasonForRejectField() {
         // input field configuring
-        final EditText input = new EditText(this);
+        final EditText input = new EditText(requireContext());
         input.setSingleLine(false);
         input.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
         input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_CLASS_TEXT);
@@ -117,7 +129,7 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable, 
 
     private void processReject(SwipeItemModel cardSwiped) {
         final EditText input = buildReasonForRejectField();
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.reason_for_reject)
                 .setView(input)
                 .setPositiveButton(R.string.submit_reject, (dialog, ignored) -> model.getResult().setValue(new Result.Reject(cardSwiped, input.getText().toString())))
@@ -127,13 +139,4 @@ public class DocDetailsActivity extends AppCompatActivity implements Traceable, 
                 }).show().setCanceledOnTouchOutside(false);
     }
 
-    private List<SwipeItemModel> addList() {
-        List<SwipeItemModel> items = new ArrayList<>();
-        items.add(new SwipeItemModel(R.drawable.sample1, "Markonah", "24", "Jongdol"));
-        items.add(new SwipeItemModel(R.drawable.sample2, "Marpuah", "20", "Malang"));
-        items.add(new SwipeItemModel(R.drawable.sample3, "Sukijah", "27", "Jongdol"));
-        items.add(new SwipeItemModel(R.drawable.sample4, "Markobar", "19", "Bandung"));
-        items.add(new SwipeItemModel(R.drawable.sample5, "Marmut", "25", "Hutan"));
-        return items;
-    }
 }

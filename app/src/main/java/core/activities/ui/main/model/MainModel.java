@@ -1,4 +1,4 @@
-package core.activities.ui.view_docs;
+package core.activities.ui.main.model;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -10,28 +10,22 @@ import api.clients.middleware.request.GetDocsRequest;
 import core.activities.R;
 import core.activities.ui.shared.Async;
 import core.activities.ui.shared.TokenedModel;
-import core.activities.ui.view_docs.entity.GetDocsResult;
-import core.podam.DocumentDataProviderStrategy;
 import core.shared.Traceable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
-public class ViewDocumentsModel extends TokenedModel implements Traceable {
+public class MainModel extends TokenedModel implements Traceable {
     MutableLiveData<GetDocsResult> docsResult = new MutableLiveData<>();
 
-    public ViewDocumentsModel(@NonNull Application application) {
+    public MainModel(@NonNull Application application) {
         super(application);
         docsResult.setValue(
                 GetDocsResult.builder()
@@ -39,14 +33,6 @@ public class ViewDocumentsModel extends TokenedModel implements Traceable {
                         .build()
         );
         Async.execute(this::getDocuments);
-    }
-
-    // TODO: delete
-    List<Document> getFakeDocuments() {
-        PodamFactory pf = new PodamFactoryImpl(new DocumentDataProviderStrategy());
-        return IntStream.range(0, 20)
-                .mapToObj(ignored -> pf.manufacturePojo(Document.class))
-                .collect(Collectors.toList());
     }
 
     private void getDocuments() {

@@ -3,13 +3,21 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/mainNav"
-            app:startDestination="@+id/navDocsView">
+            app:startDestination="@+id/navDocsToSign">
+
+    <fragment
+            android:id="@+id/navDocsToSign"
+            android:name="core.activities.ui.docs_to_sign.DocsToSignFragment"
+            android:label="@string/menu_docs_to_sign"
+            tools:layout="@layout/fragment_docs_to_sign" >
+    </fragment>
 
     <fragment
             android:id="@+id/navDocsView"
             android:name="core.activities.ui.view_docs.ViewDocumentsFragment"
             android:label="@string/menu_docs_view"
-            tools:layout="@layout/fragment_view_docs"/>
+            tools:layout="@layout/fragment_view_docs" >
+    </fragment>
 
     <fragment
             android:id="@+id/navCreateDoc"

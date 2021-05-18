@@ -13,7 +13,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name=".ui.doc_details.DocDetailsActivity">
+        <activity android:name=".ui.view_docs.DocViewActivity">
         </activity>
         <activity
                 android:name=".ui.auth.SignInActivity"

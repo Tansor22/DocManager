@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import core.activities.R;
+import core.activities.ui.main.MainActivity;
 import core.activities.ui.shared.UserMessageShower;
 import core.shared.Traceable;
 import lombok.AccessLevel;
@@ -21,7 +22,6 @@ import java.util.Objects;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ViewDocumentsFragment extends Fragment implements Traceable, UserMessageShower {
-    ViewDocumentsModel model;
     RecyclerView recyclerView;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,9 +42,8 @@ public class ViewDocumentsFragment extends Fragment implements Traceable, UserMe
         final DocumentsViewAdapter adapter = new DocumentsViewAdapter();
         recyclerView.setAdapter(adapter);
 
-        // model configuring
-        model = new ViewModelProvider(this).get(ViewDocumentsModel.class);
-        model.getDocsResult().observe(getViewLifecycleOwner(), getDocsResult -> {
+        // docs binding
+        ((MainActivity) Objects.requireNonNull(getActivity())).getModel().getDocsResult().observe(getViewLifecycleOwner(), getDocsResult -> {
             if (Objects.nonNull(getDocsResult.getDocuments())) {
                 adapter.setDocs(getDocsResult.getDocuments());
             } else if (Objects.nonNull(getDocsResult.getError())) {

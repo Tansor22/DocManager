@@ -1,4 +1,4 @@
-package core.activities.ui.doc_details.swipe;
+package core.activities.ui.docs_to_sign.swipe;
 
 import android.view.LayoutInflater;
 import android.view.View;

@@ -1,6 +1,6 @@
-package core.activities.ui.doc_details.model;
+package core.activities.ui.docs_to_sign.model;
 
-import core.activities.ui.doc_details.swipe.SwipeItemModel;
+import core.activities.ui.docs_to_sign.swipe.SwipeItemModel;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
