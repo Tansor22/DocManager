@@ -35,10 +35,8 @@ public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHold
     public void onBindViewHolder(@NonNull DocumentsViewHolder holder, int position) {
         final Document document = _docs.get(position);
         holder.itemView.setOnClickListener(self -> {
-            // todo viewDocActivity
             Intent intent = new Intent(holder.itemView.getContext(), DocViewActivity.class);
-            intent.putParcelableArrayListExtra("docs", new ArrayList<>(_docs));
-            intent.putExtra("position", position);
+            intent.putExtra("doc", _docs.get(position));
             holder.itemView.getContext().startActivity(intent);
         });
         holder.updateUI(document);

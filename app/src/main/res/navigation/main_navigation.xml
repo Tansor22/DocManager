@@ -3,7 +3,7 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/mainNav"
-            app:startDestination="@+id/navDocsToSign">
+            app:startDestination="@+id/navDocsView">
 
     <fragment
             android:id="@+id/navDocsToSign"

@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +28,12 @@ public class ViewDocumentsFragment extends Fragment implements Traceable, UserMe
 
         // createDoc button configuring
         final FloatingActionButton createDocButton = root.findViewById(R.id.createDocButton);
+        final FloatingActionButton configureFilterButton = root.findViewById(R.id.configureFilterButton);
+        configureFilterButton.setOnTouchListener((self, event) -> {
+            showUserMessage("Configure filter dialog opened");
+            self.performClick();
+            return false;
+        });
         createDocButton.setOnTouchListener((self, event) -> {
             Navigation.findNavController(self).navigate(R.id.navCreateDoc);
             self.performClick();

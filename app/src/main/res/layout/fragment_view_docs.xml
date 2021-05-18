@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_gravity="center"
         tools:context=".ui.view_docs.ViewDocumentsFragment">
 
@@ -15,13 +15,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
     </androidx.recyclerview.widget.RecyclerView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/configureFilterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:translationY="-10dp"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+            app:layout_anchor="@id/createDocButton"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_menu_filter"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/createDocButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_menu_create_doc"/>
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
