@@ -13,7 +13,7 @@ public enum HLFMiddlewareEndpoints {
     SIGN_IN("/api/auth/signIn"),
     // user apis
     NEW_DOC("/api/chaincode/newDoc"),
-    SIGN_DOC("/api/chaincode/signDoc"),
+    CHANGE_DOC("/api/chaincode/changeDoc"),
     GET_DOCS("/api/chaincode/getDocs");
     String endpointPath;
 

@@ -1,0 +1,67 @@
+<androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/d_100dp"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="@dimen/d_16dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView
+                android:id="@+id/item_title"
+                android:text="@string/doc_title"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="26sp"/>
+
+        <TextView
+                android:id="@+id/item_owner"
+                android:text="@string/doc_owner"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"/>
+        <TextView
+                android:id="@+id/item_date"
+                android:text="@string/doc_date"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"/>
+
+        <TextView
+                android:id="@+id/item_status"
+                android:text="@string/doc_status"
+                android:layout_marginBottom="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"/>
+
+        <LinearLayout
+                android:id="@+id/signsContainer"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textColor="@android:color/black"
+                      android:textSize="20sp"
+                      android:text="@string/doc_signs"/>
+        </LinearLayout>
+        <TextView
+                android:id="@+id/item_content"
+                android:text="@string/doc_content"
+                android:layout_marginBottom="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"/>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

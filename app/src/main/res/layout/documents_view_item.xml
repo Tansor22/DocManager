@@ -22,17 +22,17 @@
         <TextView android:id="@+id/tvTitle"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:text="@string/doc_title_sample"
+                  android:text="@string/doc_title"
                   android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                  android:maxLines="1"
+                  android:singleLine="true"
                   android:layout_toStartOf="@id/tvDate"
                   android:layout_alignParentStart="true"
                   android:ellipsize="end"/>
         <!--Document description-->
-        <TextView android:id="@+id/tvDescription"
+        <TextView android:id="@+id/tvStatus"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:text="@string/description_sample"
+                  android:text="@string/doc_status"
                   android:layout_below="@id/tvTitle"/>
     </RelativeLayout>
 

@@ -55,5 +55,6 @@ dependencies {
     implementation 'com.github.MohdShamweel:JsonToForms:0.1.0'
     // swipe cards
     implementation 'com.yuyakaido.android:card-stack-view:2.3.4'
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    // go date parse
+    implementation group: 'xerces', name: 'xercesImpl', version: '2.12.0'
 }

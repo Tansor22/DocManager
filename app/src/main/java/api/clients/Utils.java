@@ -1,6 +1,5 @@
 package api.clients;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.util.Base64;
 import core.activities.R;
@@ -11,8 +10,6 @@ import org.apache.commons.io.IOUtils;
 import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;

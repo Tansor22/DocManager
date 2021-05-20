@@ -87,8 +87,11 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
         ((MainActivity) requireActivity()).getModel().getDocsResult().observe(getViewLifecycleOwner(), getDocsResult -> {
             if (Objects.nonNull(getDocsResult.getDocuments())) {
                 // todo filter docs bu signs required by user logged in
-                adapter = new DocStackAdapter(Objects.requireNonNull(getDocsResult.getDocuments()).stream().map(doc ->
-                        new SwipeItemModel(R.drawable.doc_bg, doc.getTitle(), doc.getDate(), doc.getStatus())).collect(Collectors.toList()));
+                adapter = new DocStackAdapter(
+                        Objects.requireNonNull(getDocsResult.getDocuments()).stream()
+                        .map(SwipeItemModel::new)
+                        .collect(Collectors.toList())
+                );
                 cardStackView.setAdapter(adapter);
                 if (adapter.getItemCount() == 0) {
                     root.findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);

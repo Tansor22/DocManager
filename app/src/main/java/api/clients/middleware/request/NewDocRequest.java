@@ -9,8 +9,10 @@ import java.util.List;
 @Builder
 @Data
 public class NewDocRequest {
-    // todo develop
-    String org;
+    String title;
+    String type;
+    String owner;
+    String group;
     String content;
     @Singular(value = "signRequired")
     List<String> signsRequired;

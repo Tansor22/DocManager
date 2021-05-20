@@ -16,9 +16,9 @@ import java.io.IOException;
 @AllArgsConstructor
 public class AuthDataSource {
 
-    public Result signIn(String username, String password) {
+    public Result signIn(String email, String password) {
         try {
-            final SignInRequest signInRequest = new SignInRequest(username, password);
+            final SignInRequest signInRequest = new SignInRequest(email, password);
             final SignInResponse signInResponse = HLFMiddlewareAPIClient.getInstance().signIn(signInRequest);
             LoggedInUser user = LoggedInUser.fromSignInResponse(signInResponse);
             return new Result.Success(user);
@@ -28,13 +28,12 @@ public class AuthDataSource {
     }
 
 
-    public Result signUp(String username, String password) {
+    public Result signUp(String email, String password) {
         try {
-            // todo сделать email
-            final SignUpRequest signUpRequest = new SignUpRequest(username, username, password);
+            final SignUpRequest signUpRequest = new SignUpRequest(email, password);
             final SignUpResponse signUpResponse = HLFMiddlewareAPIClient.getInstance().signUp(signUpRequest);
             if ("Ok".equals(signUpResponse.getResult())) {
-               return signIn(username, password);
+               return signIn(email, password);
             } else {
                 return new Result.Error(new IOException("Unexpected result got"));
             }

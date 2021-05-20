@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SignInResponse {
     String email;
-    String username;
+    String member;
     String accessToken;
 }

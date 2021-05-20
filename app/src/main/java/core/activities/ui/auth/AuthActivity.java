@@ -40,8 +40,8 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         final ImageView closeImageView = findViewById(R.id.closeImageView);
         final TextView changeFormTextView = findViewById(R.id.changeFormTextView);
         // todo for dev purposes, delete later
-        loginEditText.setText("user332");
-        passEditText.setText("pass");
+        loginEditText.setText("kantor_s@mail.altstu.ru");
+        passEditText.setText("newton32");
         authViewModel =
                 new ViewModelProvider(this, new AuthViewModelFactory()).get(AuthViewModel.class);
         authViewModel.getLoginFormState().observe(this, loginFormState -> {
@@ -134,7 +134,7 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         ApplicationContext.getInstance().init(getApplicationContext());
         super.onCreate(savedInstanceState);
         // todo for dev purposes, uncomment for making signing in required all the time as token get cleaned
-        //SessionManager.getInstance().endUserSession(ApplicationContext.get());
+        SessionManager.getInstance().endUserSession(ApplicationContext.get());
         final JWT token = SessionManager.getInstance().getUserToken(getApplicationContext()).orElse(null);
         if (isSessionActive(token)) {
             goToMain(token);

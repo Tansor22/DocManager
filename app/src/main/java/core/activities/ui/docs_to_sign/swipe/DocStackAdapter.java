@@ -1,14 +1,16 @@
 package core.activities.ui.docs_to_sign.swipe;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import com.squareup.picasso.Picasso;
 import core.activities.R;
+import core.shared.ApplicationContext;
 
 import java.util.List;
 
@@ -38,26 +40,44 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
         return items.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
-        ImageView image;
-        TextView nama, usia, kota;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView _title, _owner, _date, _status, _content;
+        LinearLayout _signsContainer;
+
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.item_image);
-            nama = itemView.findViewById(R.id.item_title);
-            usia = itemView.findViewById(R.id.item_date);
-            kota = itemView.findViewById(R.id.item_status);
+            _title = itemView.findViewById(R.id.item_title);
+            _owner = itemView.findViewById(R.id.item_owner);
+            _date = itemView.findViewById(R.id.item_date);
+            _status = itemView.findViewById(R.id.item_status);
+            _content = itemView.findViewById(R.id.item_content);
+            _signsContainer = itemView.findViewById(R.id.signsContainer);
         }
 
-        void setData(SwipeItemModel data) {
-            Picasso.get()
-                    .load(data.getImage())
-                    .fit()
-                    .centerCrop()
-                    .into(image);
-            nama.setText(data.getNama());
-            usia.setText(data.getUsia());
-            kota.setText(data.getKota());
+        void setData(SwipeItemModel model) {
+            _title.setText(model.getDocument().getTitle());
+            _owner.setText(ApplicationContext.get().getText(R.string.doc_owner_prefix) + " "
+                    + model.getDocument().getOwner());
+            _date.setText(ApplicationContext.get().getString(R.string.doc_date_prefix) + " "
+                    + model.getDocument().getDateForUser());
+            _status.setText(ApplicationContext.get().getString(R.string.doc_status_prefix) + " "
+                    + model.getDocument().getStatusForUser());
+            _content.setText(model.getDocument().getContent());
+            // signs
+            for (String sign : model.getDocument().getSignsRequired()) {
+                TextView signTextView = new TextView(itemView.getContext());
+                signTextView.setText(sign);
+                signTextView.setTextColor(ContextCompat.getColor(ApplicationContext.get(), R.color.colorFullBlack));
+                signTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                if (model.getDocument().getSignedBy().contains(sign)) {
+                    // green check
+                    signTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_approve_small, 0, 0, 0);
+                } else {
+                    // red cross
+                    signTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_reject_small, 0, 0, 0);
+                }
+                _signsContainer.addView(signTextView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            }
         }
     }
 

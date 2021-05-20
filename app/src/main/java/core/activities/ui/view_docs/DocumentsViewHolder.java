@@ -19,18 +19,18 @@ import lombok.experimental.FieldDefaults;
 public class DocumentsViewHolder extends RecyclerView.ViewHolder {
     TextView _date;
     TextView _title;
-    TextView _description;
+    TextView _status;
 
     public DocumentsViewHolder(@NonNull View itemView) {
         super(itemView);
         _date = itemView.findViewById(R.id.tvDate);
         _title = itemView.findViewById(R.id.tvTitle);
-        _description = itemView.findViewById(R.id.tvDescription);
+        _status = itemView.findViewById(R.id.tvStatus);
     }
 
     void updateUI(Document doc) {
-        _date.setText(doc.getDate());
+        _date.setText(doc.getDateForUser());
         _title.setText(doc.getTitle());
-        _description.setText(doc.getDescription());
+        _status.setText(doc.getStatusForUser());
     }
 }

@@ -1,6 +1,9 @@
 package core.activities.ui.main;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -10,6 +13,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import com.auth0.android.jwt.JWT;
 import com.google.android.material.navigation.NavigationView;
 import core.activities.R;
 import core.activities.ui.main.model.MainModel;
@@ -32,15 +36,27 @@ public class MainActivity extends AppCompatActivity implements Traceable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SessionManager.getInstance().getUserToken(ApplicationContext.get())
-                .ifPresent(token -> trace("User token got = %s", token.toString()));
         // queries docs async
         model = new ViewModelProvider(this).get(MainModel.class);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
         NavigationView navigationView = findViewById(R.id.navView);
+
+        SessionManager.getInstance().getUserToken(ApplicationContext.get())
+                .ifPresent(token -> {
+                    trace("User token got = %s", token.toString());
+                    // member
+                    TextView userTextView = navigationView.getHeaderView(0).findViewById(R.id.memberTextView);
+                    userTextView.setText(token.getClaim("member").asString());
+                    // user email
+                    userTextView = navigationView.getHeaderView(0).findViewById(R.id.memberEmailTextView);
+                    userTextView.setText(token.getClaim("email").asString());
+                    // todo avatar
+                    final ImageView memberAvatar = navigationView.getHeaderView(0).findViewById(R.id.memberAvatar);
+                });
 
         appBarConfiguration = new AppBarConfiguration.Builder(R.id.navDocsToSign, R.id.navDocsView, R.id.navCreateDoc)
                 .setOpenableLayout(drawer)

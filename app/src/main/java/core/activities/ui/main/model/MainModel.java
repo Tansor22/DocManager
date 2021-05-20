@@ -36,9 +36,9 @@ public class MainModel extends TokenedModel implements Traceable {
     }
 
     private void getDocuments() {
-        final String org = token.getClaim("org").asString();
+        final String group = token.getClaim("group").asString();
         GetDocsRequest getDocsRequest = GetDocsRequest.builder()
-                .orgName(org)
+                .group(group)
                 .build();
         try {
             final List<Document> documents = HLFMiddlewareAPIClient.getInstance().getDocs(getDocsRequest, token.toString()).getDocuments();
