@@ -134,7 +134,7 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         ApplicationContext.getInstance().init(getApplicationContext());
         super.onCreate(savedInstanceState);
         // todo for dev purposes, uncomment for making signing in required all the time as token get cleaned
-        SessionManager.getInstance().endUserSession(ApplicationContext.get());
+        //SessionManager.getInstance().endUserSession(ApplicationContext.get());
         final JWT token = SessionManager.getInstance().getUserToken(getApplicationContext()).orElse(null);
         if (isSessionActive(token)) {
             goToMain(token);
