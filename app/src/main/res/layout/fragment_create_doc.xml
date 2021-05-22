@@ -15,11 +15,5 @@
             android:layout_height="match_parent"
             android:padding="8dp">
     </androidx.recyclerview.widget.RecyclerView>
-<!--
-    <core.activities.ui.create_doc.MultiSelectionSpinner
-            android:layout_gravity="center"
-            android:id="@+id/signsMultiSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>-->
 
 </LinearLayout>

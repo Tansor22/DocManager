@@ -42,11 +42,11 @@
     "_id": "doc_content_edit",
     "is_required": true,
     "hint": "Название документа",
-    "type": 2
+    "type": 12
   },
   {
     "_id": "doc_signs_multi_spinner",
-
+    "hint": "Выберите подписи",
     "text": "Подписи",
     "list": [
       {

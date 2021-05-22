@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import core.activities.R;
 import core.activities.ui.shared.UserMessageShower;
+import core.activities.ui.shared.ui.ItemSelectedListener;
 
 public class CreateDocumentWizardActivity extends AppCompatActivity implements UserMessageShower {
 
@@ -14,7 +15,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
         setContentView(R.layout.activity_create_document_wizard);
         Spinner docTypeSelectionSpinner = findViewById(R.id.docTypeSelectionSpinner);
 
-        docTypeSelectionSpinner.setOnItemSelectedListener((DocumentTypeSelectedListener) (parent, itemSelected, position, selectedId) -> {
+        docTypeSelectionSpinner.setOnItemSelectedListener((ItemSelectedListener) (parent, itemSelected, position, selectedId) -> {
             showUserMessage("Selected position" + position);
             // build form
         });

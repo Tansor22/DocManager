@@ -1,4 +1,4 @@
-package core.activities.ui.create_doc;
+package core.activities.ui.shared.forms;
 
 import android.widget.RadioButton;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,13 +13,13 @@ import core.shared.ApplicationContext;
 
 import java.util.List;
 
-public class CheckDocFieldValidations {
+public class CheckFieldValidations {
     public static boolean isFieldsValidated(RecyclerView recyclerView, List<JSONModel> jsonModelList) {
         final boolean[] isValidated = {true};
 
         for (int i = 0; i < jsonModelList.size(); i++) {
             RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null && viewHolder.itemView != null) {
+            if (viewHolder != null) {
                 if (viewHolder instanceof EditTextViewHolder) {
                     ((EditTextViewHolder) viewHolder).layoutEdittext.setErrorEnabled(false);
                 } else if (viewHolder instanceof RadioViewHolder) {
@@ -42,8 +42,8 @@ public class CheckDocFieldValidations {
 
 
             if (jsonModel.getRequired() != null && jsonModel.getRequired()) {
-                if (viewHolder != null && viewHolder.itemView != null) {
-                    if (jsonModel.getType() == FormConstants.TYPE_EDITTEXT
+                if (viewHolder != null) {
+                    if ((jsonModel.getType() == FormConstants.TYPE_EDITTEXT || jsonModel.getType() == FormAdapterEx.TYPE_MULTI_LINE_EDIT_TEXT)
                             && fieldValue.equalsIgnoreCase(EMPTY_STRING)) {
                         ((EditTextViewHolder) viewHolder).layoutEdittext.setErrorEnabled(true);
                         ((EditTextViewHolder) viewHolder).layoutEdittext.setError(ApplicationContext.get().getString(R.string.required_field));
@@ -62,17 +62,12 @@ public class CheckDocFieldValidations {
                             ((RadioButton) ((RadioViewHolder) viewHolder).rGroup.getChildAt(j)).setError(ApplicationContext.get().getString(R.string.required_field));
                         }
                         recyclerView.smoothScrollToPosition(i);
-
                         isValidated[0] = false;
                     }
 
                 }
             }
-
-
         }
-
-
         return isValidated[0];
     }
 }

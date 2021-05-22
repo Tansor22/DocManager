@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/border">
-            <core.activities.ui.create_doc.MultiSelectionSpinner
+            <core.activities.ui.shared.ui.MultiSelectionSpinner
                     android:id="@+id/multiSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"

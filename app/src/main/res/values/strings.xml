@@ -43,6 +43,7 @@
     <string name="answer_no">Нет</string>
     <string name="dont_show_anymore">Больше не показывать</string>
     <string name="cancel">Отмена</string>
+    <string name="select_all">Выбрать все</string>
     <string name="submit_reject">Подтвердить отказ</string>
     <string name="apply">Применить</string>
     <string name="required_field">Обязательное поле</string>
