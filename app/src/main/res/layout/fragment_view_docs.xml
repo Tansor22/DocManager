@@ -15,6 +15,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
     </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+        <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/docLoading"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/docLoadingText"
+                android:text="@string/docs_loading"/>
+    </LinearLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/configureFilterButton"
             android:layout_width="wrap_content"
@@ -34,7 +54,6 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_menu_create_doc"/>
-
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

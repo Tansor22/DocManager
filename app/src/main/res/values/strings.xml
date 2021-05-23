@@ -54,7 +54,7 @@
     <string name="apply">Применить</string>
     <string name="required_field">Обязательное поле</string>
     <string name="close">Закрыть</string>
-    <string name="no_more_docs">У вас больше нет документов на рассмотрение.</string>
+    <string name="no_more_docs">У вас пока нет документов на рассмотрение.</string>
     <string name="configure_filters_title">Настройка отображения документов</string>
     <string name="is_completed_docs_shown">Показывать завершенные документы</string>
     <string name="is_rejected_docs_shown">Показывать отклоненные документы</string>
@@ -179,4 +179,5 @@
     </string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="docs_loading">Подгрузка документов...</string>
 </resources>

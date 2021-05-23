@@ -11,20 +11,15 @@ import core.activities.R;
 import core.shared.Traceable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-@Accessors(fluent = true, prefix = "_")
 public class DocumentsViewAdapter extends RecyclerView.Adapter<DocumentsViewHolder> implements Traceable {
-    @Getter
     List<Document> _docs;
 
     @NonNull

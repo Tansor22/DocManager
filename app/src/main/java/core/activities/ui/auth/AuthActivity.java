@@ -125,8 +125,6 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
     private void goToMain(JWT jwt) {
         setResult(Activity.RESULT_OK);
         Intent intent = new Intent(this, MainActivity.class);
-        // todo no need to pass jwt
-        intent.putExtra("jwt", jwt);
         finish();
         startActivity(intent);
     }
