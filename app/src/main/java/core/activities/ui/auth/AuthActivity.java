@@ -16,6 +16,7 @@ import com.auth0.android.jwt.JWT;
 import core.activities.R;
 import core.activities.ui.main.MainActivity;
 import core.activities.ui.shared.UserMessageShower;
+import core.sessions.SessionConstants;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
 
@@ -26,6 +27,7 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
     private AuthViewModel authViewModel;
     private @IdRes
     int layout;
+    public static String MEMBER_AVATAR_STORED_KEY = SessionConstants.SESSION_PREFERENCES_PREFIX + "MEMBER_AVATAR_STORED_KEY";
 
     protected final void init(@IdRes int layout) {
         this.layout = layout;
@@ -40,8 +42,8 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         final ImageView closeImageView = findViewById(R.id.closeImageView);
         final TextView changeFormTextView = findViewById(R.id.changeFormTextView);
         // todo for dev purposes, delete later
-        loginEditText.setText("ishimael@bk.ru");
-        passEditText.setText("avdeev11");
+        loginEditText.setText("kantor_s@mail.altstu.ru");
+        passEditText.setText("newton32");
         authViewModel =
                 new ViewModelProvider(this, new AuthViewModelFactory()).get(AuthViewModel.class);
         authViewModel.getLoginFormState().observe(this, loginFormState -> {
@@ -68,6 +70,7 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
                 updateUiWithUser(loginResult.getSuccess());
                 final JWT jwt = loginResult.getSuccess().getJwt();
                 SessionManager.getInstance().startUserSession(ApplicationContext.get(), jwt);
+                SessionManager.getInstance().store(ApplicationContext.get(), MEMBER_AVATAR_STORED_KEY, loginResult.getSuccess().getAvatar());
                 goToMain(jwt);
             }
         });

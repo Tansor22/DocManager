@@ -2,7 +2,10 @@ package core.activities.ui.main;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,26 +18,29 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import com.auth0.android.jwt.JWT;
 import com.google.android.material.navigation.NavigationView;
 import core.activities.R;
 import core.activities.ui.auth.SignInActivity;
 import core.activities.ui.main.model.MainModel;
 import core.activities.ui.shared.UserMessageShower;
-import core.activities.ui.shared.ui.MultiSelectionSpinner;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
 import core.shared.Traceable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
+
+import static core.activities.ui.auth.AuthActivity.MEMBER_AVATAR_STORED_KEY;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MainActivity extends AppCompatActivity implements Traceable, UserMessageShower {
     AppBarConfiguration appBarConfiguration;
     @Getter
-    MainModel model;
+    static MainModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,18 +55,27 @@ public class MainActivity extends AppCompatActivity implements Traceable, UserMe
 
         NavigationView navigationView = findViewById(R.id.navView);
 
-        SessionManager.getInstance().getUserToken(ApplicationContext.get())
-                .ifPresent(token -> {
-                    trace("User token got = %s", token.toString());
-                    // member
-                    TextView userTextView = navigationView.getHeaderView(0).findViewById(R.id.memberTextView);
-                    userTextView.setText(token.getClaim("member").asString());
-                    // user email
-                    userTextView = navigationView.getHeaderView(0).findViewById(R.id.memberEmailTextView);
-                    userTextView.setText(token.getClaim("email").asString());
-                    // todo avatar
-                    final ImageView memberAvatar = navigationView.getHeaderView(0).findViewById(R.id.memberAvatar);
-                });
+        final JWT token = SessionManager.getInstance().getUserToken(ApplicationContext.get())
+                .orElseThrow(() -> new IllegalStateException("Token must not be null at this stage."));
+
+        trace("User token got = %s", token.toString());
+
+        // member
+        TextView userTextView = navigationView.getHeaderView(0).findViewById(R.id.memberTextView);
+        userTextView.setText(token.getClaim("member").asString());
+
+        // user email
+        userTextView = navigationView.getHeaderView(0).findViewById(R.id.memberEmailTextView);
+        userTextView.setText(token.getClaim("email").asString());
+
+        // user avatar
+        final String avatarBase64 = SessionManager.getInstance().get(ApplicationContext.get(), MEMBER_AVATAR_STORED_KEY);
+        final ImageView memberAvatar = navigationView.getHeaderView(0).findViewById(R.id.memberAvatar);
+        if (StringUtils.isNotEmpty(avatarBase64)) {
+            memberAvatar.setImageBitmap(getImageFromBase64(avatarBase64));
+        } else {
+            memberAvatar.setImageDrawable(getDrawable(R.mipmap.ic_launcher_round));
+        }
 
         appBarConfiguration = new AppBarConfiguration.Builder(R.id.navDocsToSign, R.id.navDocsView, R.id.navCreateDoc)
                 .setOpenableLayout(drawer)
@@ -75,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements Traceable, UserMe
             // special behavior
             if (item.getItemId() == R.id.navLogout) {
                 buildAndShowLogoutDialog();
+            } else if (item.getItemId() == R.id.navSettings) {
+                buildAndShowNotSupportedYetDialog();
             }
             // ordinary behavior
             NavigationUI.onNavDestinationSelected(item, navController);
@@ -83,6 +100,25 @@ public class MainActivity extends AppCompatActivity implements Traceable, UserMe
             drawer.closeDrawer(GravityCompat.START);
             return true;
         });
+    }
+
+    private Bitmap getImageFromBase64(String encoded) {
+        String toDecode = encoded;
+        if (encoded.contains(",")) {
+            // removes 'data:image/png;base64,' and 'data:image/jpeg;base64,'
+            toDecode = encoded.substring(encoded.indexOf(',') + 1);
+        }
+        byte[] decoded = Base64.decode(toDecode, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+    }
+
+    private void buildAndShowNotSupportedYetDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.not_supported_yet_dialog_title);
+        builder.setPositiveButton(R.string.ok, (dialog, which) -> {
+            dialog.dismiss();
+        });
+        builder.show();
     }
 
     private void buildAndShowLogoutDialog() {

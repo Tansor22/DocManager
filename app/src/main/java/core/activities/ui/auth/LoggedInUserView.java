@@ -16,4 +16,5 @@ import lombok.experimental.FieldDefaults;
 class LoggedInUserView {
     String displayName;
     JWT jwt;
+    String avatar;
 }

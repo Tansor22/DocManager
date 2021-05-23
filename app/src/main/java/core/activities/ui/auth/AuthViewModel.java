@@ -34,7 +34,7 @@ public class AuthViewModel extends ViewModel {
             LoginResult lr;
             if (result instanceof Result.Success) {
                 LoggedInUser data = ((Result.Success) result).getUser();
-                lr = new LoginResult(new LoggedInUserView(data.getData().getMember(), data.getJwt()));
+                lr = new LoginResult(new LoggedInUserView(data.getData().getMember(), data.getJwt(), data.getData().getAvatar()));
             } else {
                 lr = new LoginResult(R.string.login_failed);
             }

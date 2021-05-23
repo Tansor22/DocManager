@@ -125,9 +125,8 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
 
     @Override
     public void onDestroyView() {
-        // todo unreliable
         if (needUpdate)
-            Async.execute(() -> ((MainActivity) requireActivity()).getModel().getDocuments());
+            Async.execute(() -> MainActivity.getModel().getDocuments());
         super.onDestroyView();
     }
 
@@ -143,6 +142,7 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
         // owner is not user logged and doc requires his sign and it is hit turn to sign
         return documents.stream()
                 .filter(document -> !member.equals(document.getOwner())
+                        && document.getStatus().equals("PROCESSING")
                         && document.getSignsRequired().contains(member)
                         && member.equals(document.getCurrentSign()))
                 .collect(Collectors.toList());

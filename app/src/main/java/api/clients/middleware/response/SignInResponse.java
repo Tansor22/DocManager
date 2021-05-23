@@ -10,4 +10,5 @@ public class SignInResponse {
     String email;
     String member;
     String accessToken;
+    String avatar;
 }

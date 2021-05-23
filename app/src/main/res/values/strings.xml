@@ -43,7 +43,9 @@
     <string name="goto_wizard_title">Использовать мастер создания документа?</string>
     <string name="answer_yes">Да</string>
     <string name="logout_hint">До свидания %s!</string>
+    <string name="doc_created_hint">Создан документ %s</string>
     <string name="logout_dialog_title">Вы действительно хотите выйти?</string>
+    <string name="not_supported_yet_dialog_title">Еще не поддерживатся</string>
     <string name="answer_no">Нет</string>
     <string name="dont_show_anymore">Больше не показывать</string>
     <string name="cancel">Отмена</string>
@@ -52,7 +54,7 @@
     <string name="apply">Применить</string>
     <string name="required_field">Обязательное поле</string>
     <string name="close">Закрыть</string>
-    <string name="no_more_docs">У вас больше нет документов на подпись.</string>
+    <string name="no_more_docs">У вас больше нет документов на рассмотрение.</string>
     <string name="configure_filters_title">Настройка отображения документов</string>
     <string name="is_completed_docs_shown">Показывать завершенные документы</string>
     <string name="is_rejected_docs_shown">Показывать отклоненные документы</string>

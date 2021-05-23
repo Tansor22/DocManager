@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,12 +24,17 @@ import com.shamweel.jsontoforms.adapters.FormAdapter;
 import com.shamweel.jsontoforms.interfaces.JsonToFormClickListener;
 import com.shamweel.jsontoforms.models.JSONModel;
 import com.shamweel.jsontoforms.sigleton.DataValueHashMap;
+import com.shamweel.jsontoforms.viewholder.CheckboxViewHolder;
+import com.shamweel.jsontoforms.viewholder.EditTextViewHolder;
+import com.shamweel.jsontoforms.viewholder.RadioViewHolder;
+import com.shamweel.jsontoforms.viewholder.SpinnerViewHolder;
 import core.activities.R;
 import core.activities.ui.main.MainActivity;
 import core.activities.ui.shared.Async;
 import core.activities.ui.shared.UserMessageShower;
 import core.activities.ui.shared.forms.CheckFieldValidations;
 import core.activities.ui.shared.forms.FormAdapterEx;
+import core.activities.ui.shared.forms.MultiSpinnerHolder;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
 import core.shared.Traceable;
@@ -100,9 +106,8 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
 
     @Override
     public void onDestroyView() {
-        // todo unreliable
         if (needUpdate)
-            Async.execute(() -> ((MainActivity) requireActivity()).getModel().getDocuments());
+            Async.execute(() -> MainActivity.getModel().getDocuments());
         super.onDestroyView();
     }
 
@@ -132,9 +137,36 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
                         .build();
                 HLFMiddlewareAPIClient.getInstance().newDoc(newDocRequest, token.toString());
                 needUpdate = true;
+                requireActivity().runOnUiThread(() -> {
+                    showUserMessage(String.format(getString(R.string.doc_created_hint), dataValueHashMap.get("doc_title_edit")));
+                    clearForm();
+                });
             } catch (HLFException e) {
                 showUserMessage(R.string.unexpected_error);
             }
         });
+    }
+
+    private void clearForm() {
+        for (int i = 0; i < mAdapter.getItemCount(); i++) {
+            final RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(i);
+            if (holder != null) {
+                if (holder instanceof EditTextViewHolder) {
+                    ((EditTextViewHolder) holder).layoutEdittext.getEditText().setText("");
+                } else if (holder instanceof RadioViewHolder) {
+                    // select first item
+                    ((RadioButton) ((RadioViewHolder) holder).rGroup.getChildAt(0)).setChecked(true);
+                } else if (holder instanceof CheckboxViewHolder) {
+                    // uncheck
+                    ((CheckboxViewHolder) holder).checkBox.setChecked(false);
+                } else if (holder instanceof SpinnerViewHolder) {
+                    //select first item
+                    ((SpinnerViewHolder) holder).spinner.setSelection(0);
+                } else if (holder instanceof MultiSpinnerHolder) {
+                    //select first item
+                    ((MultiSpinnerHolder) holder).getMultiSpinner().setSelection(0);
+                }
+            }
+        }
     }
 }
