@@ -1,6 +1,7 @@
 package core.activities.ui.create_doc;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,9 +37,11 @@ import core.activities.ui.shared.UserMessageShower;
 import core.activities.ui.shared.forms.CheckFieldValidations;
 import core.activities.ui.shared.forms.FormAdapterEx;
 import core.activities.ui.shared.forms.MultiSpinnerHolder;
+import core.sessions.SessionConstants;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
 import core.shared.Traceable;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +57,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
     FormAdapter mAdapter;
     List<JSONModel> jsonModelList = new ArrayList<>();
     private boolean needUpdate;
+    static String DONT_SHOW_WIZARD_DIALOG_FLAG_KEY = SessionConstants.SESSION_PREFERENCES_PREFIX + "DONT_SHOW_WIZARD_DIALOG_FLAG";
 
     private void showGotoWizardOption() {
         CheckBox dontShowAnymoreCheckBox = new CheckBox(requireContext());
@@ -62,12 +66,15 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.goto_wizard_title)
                 .setView(dontShowAnymoreCheckBox)
-                .setPositiveButton(R.string.answer_yes, (dialog, ignored) -> {
-                    // todo go to wizard
-                    trace("Dont show anymore " + dontShowAnymoreCheckBox.isChecked());
-                })
+                .setPositiveButton(R.string.answer_yes, (dialog, ignored) -> model.getDocTypes().observe(getViewLifecycleOwner(), docTypes -> {
+                    Intent intent = new Intent(requireContext(), CreateDocumentWizardActivity.class);
+                    intent.putStringArrayListExtra("docTypes", new ArrayList<>(docTypes));
+                    startActivity(intent);
+                    SessionManager.getInstance().store(ApplicationContext.get(), DONT_SHOW_WIZARD_DIALOG_FLAG_KEY, Boolean.toString(dontShowAnymoreCheckBox.isChecked()));
+                }))
                 .setNegativeButton(R.string.answer_no, (dialog, ignored) -> {
-                    trace("Dont show anymore " + dontShowAnymoreCheckBox.isChecked());
+                    dialog.cancel();
+                    SessionManager.getInstance().store(ApplicationContext.get(), DONT_SHOW_WIZARD_DIALOG_FLAG_KEY, Boolean.toString(dontShowAnymoreCheckBox.isChecked()));
                 }).show().setCanceledOnTouchOutside(true);
     }
 
@@ -76,6 +83,10 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
         model = new ViewModelProvider(this).get(CreateDocumentModel.class);
         View root = inflater.inflate(R.layout.fragment_create_doc, container, false);
         // form init
+        String isNotWizardDialogShown = SessionManager.getInstance().get(ApplicationContext.get(), DONT_SHOW_WIZARD_DIALOG_FLAG_KEY);
+        if (StringUtils.isEmpty(isNotWizardDialogShown) || !Boolean.getBoolean(isNotWizardDialogShown)) {
+            showGotoWizardOption();
+        }
         recyclerView = root.findViewById(R.id.recyclerView);
         DataValueHashMap.init();
         initRecyclerView();
@@ -106,14 +117,18 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
     }
 
     private List<JSONModel> fixFormConfig(List<JSONModel> formConfig) {
+        List<String> docTypes = new ArrayList<>();
         formConfig.stream()
                 .filter(model -> "doc_type_spinner".equals(model.getId()))
                 .findFirst()
                 .ifPresent(self -> self.getList()
-                        .forEach(listItem -> listItem.setIndexText(
-                                HLFDataAdapter.toUserDocumentType(listItem.getIndexText())
-                        ))
+                        .forEach(listItem -> {
+                            String docType = HLFDataAdapter.toUserDocumentType(listItem.getIndexText());
+                            docTypes.add(docType);
+                            listItem.setIndexText(docType);
+                        })
                 );
+        model.getDocTypes().postValue(docTypes);
         return formConfig;
     }
 

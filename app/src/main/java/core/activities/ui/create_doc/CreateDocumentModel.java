@@ -1,22 +1,17 @@
 package core.activities.ui.create_doc;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import core.shared.Tagged;
+import lombok.Getter;
+
+import java.util.List;
 
 public class CreateDocumentModel extends ViewModel implements Tagged {
-
-    //todo stub implementation
-
-    private final MutableLiveData<String> text;
+    @Getter
+    private final MutableLiveData<List<String>> docTypes;
 
     public CreateDocumentModel() {
-        text = new MutableLiveData<>();
-        text.setValue("This is " + getTag() + " fragment");
-    }
-
-    public LiveData<String> getText() {
-        return text;
+        docTypes = new MutableLiveData<>();
     }
 }
