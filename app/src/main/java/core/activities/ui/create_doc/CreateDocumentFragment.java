@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import api.clients.middleware.HLFDataAdapter;
 import api.clients.middleware.HLFMiddlewareAPIClient;
 import api.clients.middleware.exception.HLFException;
 import api.clients.middleware.request.GetFormConfigRequest;
@@ -96,12 +97,24 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
             try {
                 final GetFormConfigResponse formConfig =
                         HLFMiddlewareAPIClient.getInstance().getFormConfig(new GetFormConfigRequest(), token.toString());
-                jsonModelList.addAll(formConfig.getConfig());
+                jsonModelList.addAll(fixFormConfig(formConfig.getConfig()));
                 requireActivity().runOnUiThread(() -> mAdapter.notifyDataSetChanged());
             } catch (HLFException e) {
                 showUserMessage(R.string.unexpected_error);
             }
         });
+    }
+
+    private List<JSONModel> fixFormConfig(List<JSONModel> formConfig) {
+        formConfig.stream()
+                .filter(model -> "doc_type_spinner".equals(model.getId()))
+                .findFirst()
+                .ifPresent(self -> self.getList()
+                        .forEach(listItem -> listItem.setIndexText(
+                                HLFDataAdapter.toUserDocumentType(listItem.getIndexText())
+                        ))
+                );
+        return formConfig;
     }
 
     @Override
@@ -129,7 +142,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
                 List<String> signs = Arrays.asList(dataValueHashMap.get("doc_signs_multi_spinner").split(","));
                 final NewDocRequest newDocRequest = NewDocRequest.builder()
                         .title(dataValueHashMap.get("doc_title_edit"))
-                        .type(dataValueHashMap.get("doc_type_spinner"))
+                        .type(HLFDataAdapter.fromUserDocumentType(dataValueHashMap.get("doc_type_spinner")))
                         .owner(token.getClaim("member").asString())
                         .group(token.getClaim("group").asString())
                         .content(dataValueHashMap.get("doc_content_edit"))

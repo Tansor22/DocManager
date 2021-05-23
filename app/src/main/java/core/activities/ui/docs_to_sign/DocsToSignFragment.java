@@ -61,13 +61,15 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
                     .orElseThrow(() -> new IllegalStateException("Token must not be null at this stage."));
             Async.execute(() -> {
                 try {
+                    final String member = token.getClaim("member").asString();
                     HLFMiddlewareAPIClient.getInstance().changeDoc(ChangeDocRequest.builder()
                             .documentId(result.getCardSwiped().getDocument().getDocumentId())
-                            .member(token.getClaim("member").asString())
-                            .type(result.approved() ? "APPROVE" : result.rejected() ? "REJECT" : "UNKNOWN")
+                            .member(member)
+                            .type(result.approved() ? "APPROVE" : "REJECT")
                             .details(result.rejected() ? ((Result.Reject) result).getReason() : null)
                             .build(), token.toString());
                     needUpdate = true;
+                    showUserMessage(String.format(getString(result.approved() ? R.string.doc_approved_hint : R.string.doc_rejected_hint), member));
                 } catch (HLFException e) {
                     cardStackView.rewind();
                     requireActivity().runOnUiThread(() -> showUserMessage(R.string.unexpected_error));

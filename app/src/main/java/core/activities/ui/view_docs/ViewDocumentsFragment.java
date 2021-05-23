@@ -45,7 +45,7 @@ public class ViewDocumentsFragment extends Fragment implements Traceable, UserMe
     ViewDocumentsModel model;
 
     // 3 secs
-    int docsLoadingDelay = 3_000;
+    final int docsLoadingDelay = 3_000;
     boolean docsLoadingEnabled = true;
 
     static final Gson GSON = new GsonBuilder()

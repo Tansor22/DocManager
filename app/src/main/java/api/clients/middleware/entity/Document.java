@@ -2,17 +2,12 @@ package api.clients.middleware.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import core.activities.R;
-import core.shared.ApplicationContext;
+import api.clients.middleware.HLFDataAdapter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.xml.bind.DatatypeConverter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 @Data
 @ToString
@@ -29,7 +24,6 @@ public class Document implements Parcelable {
     List<Change> changes;
     List<String> signsRequired;
     List<String> signedBy;
-    static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
 
     protected Document(Parcel in) {
         documentId = in.readString();
@@ -76,27 +70,11 @@ public class Document implements Parcelable {
     }
 
     public String getStatusForUser() {
-        int resId = R.string.doc_status_unknown;
-        switch (status) {
-            case "PROCESSING":
-                resId = R.string.doc_status_processing;
-                break;
-            case "APPROVED":
-                resId = R.string.doc_status_approved;
-                break;
-            case "CLOSED":
-                resId = R.string.doc_status_closed;
-                break;
-            case "REJECTED":
-                resId = R.string.doc_status_rejected;
-                break;
-        }
-        return ApplicationContext.get().getString(resId);
+        return HLFDataAdapter.toUserStatus(status);
     }
 
     public String getDateForUser() {
-        final Calendar calendar = DatatypeConverter.parseDateTime(date);
-        return DATE_FORMATTER.format(calendar.getTime());
+        return HLFDataAdapter.parseDate(date);
     }
 
     public String getCurrentSign() {

@@ -43,6 +43,8 @@
     <string name="goto_wizard_title">Использовать мастер создания документа?</string>
     <string name="answer_yes">Да</string>
     <string name="logout_hint">До свидания %s!</string>
+    <string name="doc_approved_hint">Документ одобрен участником %s</string>
+    <string name="doc_rejected_hint">Документ отклонен участником %s</string>
     <string name="doc_created_hint">Создан документ %s</string>
     <string name="logout_dialog_title">Вы действительно хотите выйти?</string>
     <string name="not_supported_yet_dialog_title">Еще не поддерживатся</string>
@@ -65,6 +67,10 @@
     <string name="doc_owner_prefix">Владелец:</string>
     <string name="doc_sign1">С.А. Кантор</string>
     <string name="doc_type_selection_title">Выберите тип документа</string>
+    <string name="doc_type_general">Другое</string>
+    <string name="doc_type_graduated_expelling">Представление-отчисление</string>
+    <string name="doc_type_practice_permission">Приказ о допуске на практику</string>
+    <string name="doc_type_graduation_thesis_topics">Приказ о темах выпускных работ</string>
     <string name="doc_sign2">С.М. Старолетов</string>
     <string name="doc_signs">Подписи:</string>
     <string name="doc_status">Завершен</string>
@@ -177,7 +183,5 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="docs_loading">Подгрузка документов...</string>
+    <string name="docs_loading">Подгрузка документов…</string>
 </resources>
