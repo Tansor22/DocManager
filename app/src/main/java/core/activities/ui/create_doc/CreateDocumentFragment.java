@@ -13,23 +13,31 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import api.clients.middleware.HLFMiddlewareAPIClient;
+import api.clients.middleware.exception.HLFException;
+import api.clients.middleware.request.GetFormConfigRequest;
+import api.clients.middleware.request.NewDocRequest;
+import api.clients.middleware.response.GetFormConfigResponse;
+import com.auth0.android.jwt.JWT;
 import com.shamweel.jsontoforms.adapters.FormAdapter;
 import com.shamweel.jsontoforms.interfaces.JsonToFormClickListener;
 import com.shamweel.jsontoforms.models.JSONModel;
 import com.shamweel.jsontoforms.sigleton.DataValueHashMap;
 import core.activities.R;
+import core.activities.ui.main.MainActivity;
+import core.activities.ui.shared.Async;
 import core.activities.ui.shared.UserMessageShower;
 import core.activities.ui.shared.forms.CheckFieldValidations;
 import core.activities.ui.shared.forms.FormAdapterEx;
-import core.shared.JsonUtils;
+import core.sessions.SessionManager;
+import core.shared.ApplicationContext;
 import core.shared.Traceable;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+
+import static com.shamweel.jsontoforms.sigleton.DataValueHashMap.dataValueHashMap;
 
 public class CreateDocumentFragment extends Fragment implements Traceable, JsonToFormClickListener, UserMessageShower {
 
@@ -38,6 +46,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
     RecyclerView.LayoutManager layoutManager;
     FormAdapter mAdapter;
     List<JSONModel> jsonModelList = new ArrayList<>();
+    private boolean needUpdate;
 
     private void showGotoWizardOption() {
         CheckBox dontShowAnymoreCheckBox = new CheckBox(requireContext());
@@ -63,7 +72,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
         recyclerView = root.findViewById(R.id.recyclerView);
         DataValueHashMap.init();
         initRecyclerView();
-        fetchData();
+        fetchFormConfig();
         return root;
     }
 
@@ -75,39 +84,57 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
         recyclerView.setAdapter(mAdapter);
     }
 
-    private void fetchData() {
-        String formSource = "document_form.json";
-        String json = JsonUtils.loadJSONFromAsset(requireContext(), formSource);
-        List<JSONModel> jsonModelList1 = new Gson().fromJson(json, new TypeToken<List<JSONModel>>() {}.getType());
-        // signs added
-        jsonModelList.addAll(jsonModelList1);
-        mAdapter.notifyDataSetChanged();
+    private void fetchFormConfig() {
+        final JWT token = SessionManager.getInstance().getUserToken(ApplicationContext.get()).orElseThrow(IllegalStateException::new);
+        Async.execute(() -> {
+            try {
+                final GetFormConfigResponse formConfig =
+                        HLFMiddlewareAPIClient.getInstance().getFormConfig(new GetFormConfigRequest(), token.toString());
+                jsonModelList.addAll(formConfig.getConfig());
+                requireActivity().runOnUiThread(() -> mAdapter.notifyDataSetChanged());
+            } catch (HLFException e) {
+                showUserMessage(R.string.unexpected_error);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        // todo unreliable
+        if (needUpdate)
+            Async.execute(() -> ((MainActivity) requireActivity()).getModel().getDocuments());
+        super.onDestroyView();
     }
 
     @Override
     public void onAddAgainButtonClick() {
-        Toast.makeText(requireContext(), "Add again button click", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onSubmitButtonClick() {
         if (!CheckFieldValidations.isFieldsValidated(recyclerView, jsonModelList)) {
-            Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.validation_failed, Toast.LENGTH_SHORT).show();
             return;
         }
 
-
-        //Combined Data
-        JSONObject jsonObject = new JSONObject(DataValueHashMap.dataValueHashMap);
-        trace("onSubmitButtonClick: %s", jsonObject.toString());
-
-
-        //If single value required for corresponding _id's
-        for (Map.Entry<String, String> hashMap : DataValueHashMap.dataValueHashMap.entrySet()) {
-            String key = hashMap.getKey(); //  _id of the JSONOModel provided
-            String value = hashMap.getValue(); //value entered for the corresponding _id
-            trace("%s => %s", key, value);
-        }
-
+        final JWT token = SessionManager.getInstance().getUserToken(ApplicationContext.get())
+                .orElseThrow(IllegalStateException::new);
+        Async.execute(() -> {
+            try {
+                List<String> signs = Arrays.asList(dataValueHashMap.get("doc_signs_multi_spinner").split(","));
+                final NewDocRequest newDocRequest = NewDocRequest.builder()
+                        .title(dataValueHashMap.get("doc_title_edit"))
+                        .type(dataValueHashMap.get("doc_type_spinner"))
+                        .owner(token.getClaim("member").asString())
+                        .group(token.getClaim("group").asString())
+                        .content(dataValueHashMap.get("doc_content_edit"))
+                        .signsRequired(signs)
+                        .build();
+                HLFMiddlewareAPIClient.getInstance().newDoc(newDocRequest, token.toString());
+                needUpdate = true;
+            } catch (HLFException e) {
+                showUserMessage(R.string.unexpected_error);
+            }
+        });
     }
 }

@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import api.clients.middleware.entity.Document;
+import com.auth0.android.jwt.JWT;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,7 +31,9 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ViewDocumentsFragment extends Fragment implements Traceable, UserMessageShower {
@@ -53,6 +57,8 @@ public class ViewDocumentsFragment extends Fragment implements Traceable, UserMe
             // save config in shared preferences
             SessionManager.getInstance().store(ApplicationContext.get(), FILTER_CONFIG_STORED_KEY, GSON.toJson(config));
             // reset recycler view according to config
+            // TODO
+            //((DocumentsViewAdapter) recyclerView.getAdapter()).docs()
         });
         // createDoc button configuring
         final FloatingActionButton createDocButton = root.findViewById(R.id.createDocButton);
@@ -70,12 +76,22 @@ public class ViewDocumentsFragment extends Fragment implements Traceable, UserMe
         // docs binding
         ((MainActivity) Objects.requireNonNull(getActivity())).getModel().getDocsResult().observe(getViewLifecycleOwner(), getDocsResult -> {
             if (Objects.nonNull(getDocsResult.getDocuments())) {
-                adapter.setDocs(getDocsResult.getDocuments());
+                adapter.setDocs(filterDocs(getDocsResult.getDocuments()));
             } else if (Objects.nonNull(getDocsResult.getError())) {
                 showUserMessage(getDocsResult.getError());
             }
         });
         return root;
+    }
+
+    private List<Document> filterDocs(List<Document> documents) {
+        final JWT token = SessionManager.getInstance().getUserToken(requireContext())
+                .orElseThrow(() -> new IllegalStateException("Token must not be null at this stage."));
+        final String member = Objects.requireNonNull(token.getClaim("member")).asString();
+        return documents.stream()
+                // owner is logged user or doc requires sign of the user
+                .filter(document -> member.equals(document.getOwner()) || document.getSignsRequired().contains(member))
+                .collect(Collectors.toList());
     }
 
     private void buildAndShowConfigureFilter() {

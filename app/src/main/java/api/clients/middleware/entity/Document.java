@@ -98,4 +98,20 @@ public class Document implements Parcelable {
         final Calendar calendar = DatatypeConverter.parseDateTime(date);
         return DATE_FORMATTER.format(calendar.getTime());
     }
+
+    public String getCurrentSign() {
+        if (signedBy == null || signedBy.isEmpty()) {
+            return signsRequired.get(0);
+        }
+        String lastSigned = signedBy.get(signedBy.size() - 1);
+        if (!lastSigned.equals(signsRequired.get(signsRequired.size() - 1))) {
+            // last signed is not last signed required (doc is not signed)
+            for (int i = 0; i < signsRequired.size() - 1; i++) {
+                if (signsRequired.get(i).equals(lastSigned)) {
+                    return signsRequired.get(i + 1);
+                }
+            }
+        }
+        return signsRequired.get(signsRequired.size() - 1);
+    }
 }

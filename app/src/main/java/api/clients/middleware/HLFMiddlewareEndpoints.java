@@ -9,8 +9,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 public enum HLFMiddlewareEndpoints {
+    // auth apis
     SIGN_UP("/api/auth/signUp"),
     SIGN_IN("/api/auth/signIn"),
+    // service apis
+    GET_FORM_CONFIG("/api/service/getFormConfig"),
     // user apis
     NEW_DOC("/api/chaincode/newDoc"),
     CHANGE_DOC("/api/chaincode/changeDoc"),

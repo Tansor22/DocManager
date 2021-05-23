@@ -35,7 +35,7 @@ public class MainModel extends TokenedModel implements Traceable {
         Async.execute(this::getDocuments);
     }
 
-    private void getDocuments() {
+    public void getDocuments() {
         final String group = token.getClaim("group").asString();
         GetDocsRequest getDocsRequest = GetDocsRequest.builder()
                 .group(group)

@@ -17,7 +17,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import api.clients.middleware.HLFMiddlewareAPIClient;
+import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
+import api.clients.middleware.request.ChangeDocRequest;
+import com.auth0.android.jwt.JWT;
 import com.yuyakaido.android.cardstackview.*;
 import core.activities.R;
 import core.activities.ui.docs_to_sign.model.Result;
@@ -26,9 +30,13 @@ import core.activities.ui.docs_to_sign.swipe.DocStackAdapter;
 import core.activities.ui.docs_to_sign.swipe.DocStackListener;
 import core.activities.ui.docs_to_sign.swipe.SwipeItemModel;
 import core.activities.ui.main.MainActivity;
+import core.activities.ui.shared.Async;
 import core.activities.ui.shared.UserMessageShower;
+import core.sessions.SessionManager;
+import core.shared.ApplicationContext;
 import core.shared.Traceable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -37,6 +45,7 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
     private DocStackAdapter adapter;
     private CardStackView cardStackView;
     private SignDocModel model;
+    private boolean needUpdate;
 
     @Nullable
     @Override
@@ -47,13 +56,23 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
         cardStackView = root.findViewById(R.id.cardStackView);
         model = new ViewModelProvider(this).get(SignDocModel.class);
         model.getResult().observe(getViewLifecycleOwner(), self -> {
-            // todo rename to processDoc
-            try {
-                model.processDoc();
-            } catch (HLFException e) {
-                cardStackView.rewind();
-                showUserMessage(R.string.unexpected_error);
-            }
+            final Result result = model.getResult().getValue();
+            JWT token = SessionManager.getInstance().getUserToken(ApplicationContext.get())
+                    .orElseThrow(() -> new IllegalStateException("Token must not be null at this stage."));
+            Async.execute(() -> {
+                try {
+                    HLFMiddlewareAPIClient.getInstance().changeDoc(ChangeDocRequest.builder()
+                            .documentId(result.getCardSwiped().getDocument().getDocumentId())
+                            .member(token.getClaim("member").asString())
+                            .type(result.approved() ? "APPROVE" : result.rejected() ? "REJECT" : "UNKNOWN")
+                            .details(result.rejected() ? ((Result.Reject) result).getReason() : null)
+                            .build(), token.toString());
+                    needUpdate = true;
+                } catch (HLFException e) {
+                    cardStackView.rewind();
+                    requireActivity().runOnUiThread(() -> showUserMessage(R.string.unexpected_error));
+                }
+            });
             // show hint if it was the last card swiped
             if (manager.getTopPosition() == adapter.getItemCount()) {
                 root.findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);
@@ -86,11 +105,10 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
         // docs binding
         ((MainActivity) requireActivity()).getModel().getDocsResult().observe(getViewLifecycleOwner(), getDocsResult -> {
             if (Objects.nonNull(getDocsResult.getDocuments())) {
-                // todo filter docs bu signs required by user logged in
                 adapter = new DocStackAdapter(
-                        Objects.requireNonNull(getDocsResult.getDocuments()).stream()
-                        .map(SwipeItemModel::new)
-                        .collect(Collectors.toList())
+                        filterDocs(Objects.requireNonNull(getDocsResult.getDocuments())).stream()
+                                .map(SwipeItemModel::new)
+                                .collect(Collectors.toList())
                 );
                 cardStackView.setAdapter(adapter);
                 if (adapter.getItemCount() == 0) {
@@ -105,9 +123,29 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
         return root;
     }
 
+    @Override
+    public void onDestroyView() {
+        // todo unreliable
+        if (needUpdate)
+            Async.execute(() -> ((MainActivity) requireActivity()).getModel().getDocuments());
+        super.onDestroyView();
+    }
+
     private void processApprove(SwipeItemModel cardSwiped) {
         // call fabric sign doc by user
         model.getResult().setValue(new Result.Approve(cardSwiped));
+    }
+
+    private List<Document> filterDocs(List<Document> documents) {
+        final JWT token = SessionManager.getInstance().getUserToken(requireContext())
+                .orElseThrow(() -> new IllegalStateException("Token must not be null at this stage."));
+        final String member = Objects.requireNonNull(token.getClaim("member")).asString();
+        // owner is not user logged and doc requires his sign and it is hit turn to sign
+        return documents.stream()
+                .filter(document -> !member.equals(document.getOwner())
+                        && document.getSignsRequired().contains(member)
+                        && member.equals(document.getCurrentSign()))
+                .collect(Collectors.toList());
     }
 
     private EditText buildReasonForRejectField() {

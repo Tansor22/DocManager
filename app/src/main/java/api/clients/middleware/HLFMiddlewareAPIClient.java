@@ -68,9 +68,14 @@ public class HLFMiddlewareAPIClient implements Traceable {
                 Headers.of(X_ACCESS_TOKEN_HEADER, token)), GetDocsResponse.class);
     }
 
-    public ChangeDocResponse changeDoc(SignDocRequest request, String token) throws HLFException {
+    public ChangeDocResponse changeDoc(ChangeDocRequest request, String token) throws HLFException {
         return executeRequest(prepareAndLogRequest(request, CHANGE_DOC,
                 Headers.of(X_ACCESS_TOKEN_HEADER, token)), ChangeDocResponse.class);
+    }
+
+    public GetFormConfigResponse getFormConfig(GetFormConfigRequest request, String token) throws HLFException {
+        return executeRequest(prepareAndLogRequest(request, GET_FORM_CONFIG,
+                Headers.of(X_ACCESS_TOKEN_HEADER, token)), GetFormConfigResponse.class);
     }
 
     public SignUpResponse signUp(SignUpRequest request) throws HLFException {
