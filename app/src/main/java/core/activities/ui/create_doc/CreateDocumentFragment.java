@@ -85,7 +85,8 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
         // form init
         String isNotWizardDialogShown = SessionManager.getInstance().get(ApplicationContext.get(), DONT_SHOW_WIZARD_DIALOG_FLAG_KEY);
         if (StringUtils.isEmpty(isNotWizardDialogShown) || !Boolean.getBoolean(isNotWizardDialogShown)) {
-            showGotoWizardOption();
+            // todo blackest variant
+            //showGotoWizardOption();
         }
         recyclerView = root.findViewById(R.id.recyclerView);
         DataValueHashMap.init();
@@ -116,7 +117,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
         });
     }
 
-    private List<JSONModel> fixFormConfig(List<JSONModel> formConfig) {
+    private <T extends JSONModel> List<T> fixFormConfig(List<T> formConfig) {
         List<String> docTypes = new ArrayList<>();
         formConfig.stream()
                 .filter(model -> "doc_type_spinner".equals(model.getId()))
