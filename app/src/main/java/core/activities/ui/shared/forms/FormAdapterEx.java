@@ -33,7 +33,6 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
     public static final int TYPE_DATA_SUPPLIER = 15;
     //hack
     int counter;
-    List<PicturedTextViewHolder> holders = new ArrayList<>();
 
 
     public FormAdapterEx(List<JSONModel> jsonModelList, Context context, JsonToFormClickListener jsonToFormClickListener) {
@@ -91,21 +90,18 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
         } else if (holder instanceof InnerFormHolder) {
             bindInnerFormHolder((InnerFormHolder) holder, position);
         } else if (holder instanceof PicturedTextViewHolder) {
-            holders.add((PicturedTextViewHolder) holder);
             postBindPicturedTextViewHolder((PicturedTextViewHolder) holder, position);
         }
     }
 
     private void postBindPicturedTextViewHolder(PicturedTextViewHolder holder, int position) {
-        holder.txtHead.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_reject_small, 0, 0, 0);
-        showUserMessage("Pos " + holder.getBindingAdapterPosition());
+        holder.txtHead.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_reject_md, 0, 0, 0);
     }
 
     // actually binds data supplier
     private void bindInnerFormHolder(InnerFormHolder holder, int position) {
         JSONModelEx formModel = (JSONModelEx) backJsonModelList.get(position);
         final List<JSONModel> formControlsModel = formModel.getForm();
-        //final int[] counter = new int[]{0};
         FormAdapter adapter = new FormAdapterEx(formControlsModel, holder.recyclerView.getContext(), new JsonToFormClickListener() {
 
             private String getUiRepresentation(Map<String, String> uiData) {
@@ -148,20 +144,10 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
                 DataValueHashMap.dataValueHashMap.put(dataModel.getId(), getModelRepresentation(modelData));
                 formControlsModel.add(dataModel);
 
-                /*notifyDataSetChanged();
-                // todo this works
-               holder.recyclerView.getHandler().postDelayed(() -> {
-                   final PicturedTextViewHolder picturedTextViewHolder = holders.get(counter - 1);
-                   picturedTextViewHolder.txtHead.setOnClickListener(v -> {
-                       formControlsModel.remove(dataModel);
-                       DataValueHashMap.dataValueHashMap.remove(dataModel.getId());
-                       notifyDataSetChanged();
-                   });
-                }, 5000);*/
-                // todo how to delete students
+                notifyDataSetChanged();
                 // need use this instead of notifyDataSetChanged to avoid dirty hacks with counter,
                 // but this crashes app because of some android bug https://stackoverflow.com/questions/35653439/recycler-view-inconsistency-detected-invalid-view-holder-adapter-positionviewh
-                notifyItemInserted(0);
+                //notifyItemInserted(formControlsModel.size() - 1);
             }
 
             @Override

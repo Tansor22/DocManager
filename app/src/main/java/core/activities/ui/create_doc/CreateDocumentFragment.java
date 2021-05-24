@@ -85,8 +85,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
         // form init
         String isNotWizardDialogShown = SessionManager.getInstance().get(ApplicationContext.get(), DONT_SHOW_WIZARD_DIALOG_FLAG_KEY);
         if (StringUtils.isEmpty(isNotWizardDialogShown) || !Boolean.getBoolean(isNotWizardDialogShown)) {
-            // todo blackest variant
-            //showGotoWizardOption();
+            showGotoWizardOption();
         }
         recyclerView = root.findViewById(R.id.recyclerView);
         DataValueHashMap.init();
