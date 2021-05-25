@@ -35,9 +35,11 @@
     <string name="sign_up_hint">Есть аккаунт? Войдите</string>
     <string name="sign_in_hint">Нет аккаунта? Зарегистрируйтесь</string>
     <string name="login_background">фон</string>
-    <string name="validation_failed">Не все поля зааполнены корректно</string>
+    <string name="validation_failed">Не все поля заполнены корректно</string>
     <string name="ok">Ок</string>
     <string name="action_approve">Одобрить</string>
+    <string name="action_later">Пропустить</string>
+    <string name="action_edit">Изменить</string>
     <string name="action_reject">Отклонить</string>
     <string name="reason_for_reject">Укажите причину отказа</string>
     <string name="goto_wizard_title">Использовать мастер создания документа?</string>

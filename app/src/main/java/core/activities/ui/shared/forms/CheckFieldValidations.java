@@ -14,6 +14,7 @@ import core.shared.ApplicationContext;
 import java.util.List;
 
 public class CheckFieldValidations {
+    // no need to do inner forms validation as they are not required
     public static boolean isFieldsValidated(RecyclerView recyclerView, List<JSONModel> jsonModelList) {
         final boolean[] isValidated = {true};
 

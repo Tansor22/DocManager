@@ -4,11 +4,15 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import api.clients.middleware.entity.Document;
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
+import com.yuyakaido.android.cardstackview.Direction;
 import core.activities.R;
 import core.shared.ApplicationContext;
 
@@ -19,7 +23,7 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
     private List<SwipeItemModel> items;
 
     public DocStackAdapter(List<SwipeItemModel> items) {
-        this.items = items;
+        setItems(items);
     }
 
     @NonNull
@@ -32,7 +36,10 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setData(items.get(position));
+        final SwipeItemModel swipeItemModel = items.get(position);
+        holder.setData(swipeItemModel);
+        final Document document = swipeItemModel.getDocument();
+        holder.configureOverlays(document);
     }
 
     @Override
@@ -40,8 +47,9 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
         return items.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView _title, _owner, _date, _status, _content;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView _title, _owner, _date, _status, _content, _rightOverlayText, _leftOverlayText;
+        ImageView _rightOverlayImg, _leftOverlayImg;
         LinearLayout _signsContainer;
 
         ViewHolder(@NonNull View itemView) {
@@ -52,6 +60,10 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
             _status = itemView.findViewById(R.id.item_status);
             _content = itemView.findViewById(R.id.item_content);
             _signsContainer = itemView.findViewById(R.id.signsContainer);
+            _rightOverlayText = itemView.findViewById(R.id.approveHint);
+            _leftOverlayText = itemView.findViewById(R.id.rejectHint);
+            _rightOverlayImg = itemView.findViewById(R.id.approveImg);
+            _leftOverlayImg = itemView.findViewById(R.id.rejectImg);
         }
 
         void setData(SwipeItemModel model) {
@@ -79,6 +91,11 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
                 _signsContainer.addView(signTextView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             }
         }
+
+        // should use only in case of mode FREEDOM
+        public void configureOverlays(Document document) {
+
+        }
     }
 
     public List<SwipeItemModel> getItems() {
@@ -87,5 +104,6 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
 
     public void setItems(List<SwipeItemModel> items) {
         this.items = items;
+        notifyDataSetChanged();
     }
 }

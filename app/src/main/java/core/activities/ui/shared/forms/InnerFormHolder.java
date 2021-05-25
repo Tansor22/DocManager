@@ -1,6 +1,7 @@
 package core.activities.ui.shared.forms;
 
 import android.view.View;
+import android.view.ViewTreeObserver;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,7 @@ import java.util.List;
 public class InnerFormHolder extends RecyclerView.ViewHolder implements UserMessageShower {
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
+    List<JSONModel> jsonModelList;
 
     public InnerFormHolder(View view, List<JSONModel> jsonModelList) {
         super(view);

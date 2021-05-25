@@ -146,7 +146,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
     @Override
     public void onSubmitButtonClick() {
         if (!CheckFieldValidations.isFieldsValidated(recyclerView, jsonModelList)) {
-            Toast.makeText(requireContext(), R.string.validation_failed, Toast.LENGTH_SHORT).show();
+            showUserMessage(R.string.validation_failed);
             return;
         }
 

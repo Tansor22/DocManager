@@ -102,6 +102,7 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
     private void bindInnerFormHolder(InnerFormHolder holder, int position) {
         JSONModelEx formModel = (JSONModelEx) backJsonModelList.get(position);
         final List<JSONModel> formControlsModel = formModel.getForm();
+        holder.jsonModelList = formControlsModel;
         FormAdapter adapter = new FormAdapterEx(formControlsModel, holder.recyclerView.getContext(), new JsonToFormClickListener() {
 
             private String getUiRepresentation(Map<String, String> uiData) {
