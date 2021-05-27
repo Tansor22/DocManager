@@ -36,6 +36,7 @@
     <string name="sign_in_hint">Нет аккаунта? Зарегистрируйтесь</string>
     <string name="login_background">фон</string>
     <string name="validation_failed">Не все поля заполнены корректно</string>
+    <string name="doc_edited">\'%s\' успешно изменен</string>
     <string name="ok">Ок</string>
     <string name="action_approve">Одобрить</string>
     <string name="action_later">Пропустить</string>

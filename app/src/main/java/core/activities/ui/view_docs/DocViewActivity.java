@@ -45,9 +45,10 @@ public class DocViewActivity extends AppCompatActivity implements Traceable, Use
                 + doc.getDateForUser());
         _status.setText(ApplicationContext.get().getString(R.string.doc_status_prefix) + " "
                 + doc.getStatusForUser());
-        _content.setText(doc.getContent());
+        _content.setText(doc.getAttributes().getContent());
         // signs
-        for (String sign : doc.getSignsRequired()) {
+        for (int i = 0; i < doc.getSignsRequired().size(); i++) {
+            String sign = (String) doc.getSignsRequired().get(i);
             TextView signTextView = new TextView(this);
             signTextView.setText(sign);
             signTextView.setTextColor(ContextCompat.getColor(ApplicationContext.get(), R.color.colorFullBlack));

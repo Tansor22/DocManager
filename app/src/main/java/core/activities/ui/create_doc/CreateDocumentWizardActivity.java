@@ -5,13 +5,14 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Preconditions;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import api.clients.middleware.HLFDataAdapter;
 import api.clients.middleware.HLFMiddlewareAPIClient;
+import api.clients.middleware.entity.Attributes;
 import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
 import api.clients.middleware.request.GetFormConfigRequest;
@@ -27,24 +28,22 @@ import com.shamweel.jsontoforms.viewholder.EditTextViewHolder;
 import com.shamweel.jsontoforms.viewholder.RadioViewHolder;
 import com.shamweel.jsontoforms.viewholder.SpinnerViewHolder;
 import core.activities.R;
+import core.activities.ui.create_doc.adapt.FormModelAdapter;
 import core.activities.ui.docs_to_sign.DocsToSignFragment;
 import core.activities.ui.shared.Async;
 import core.activities.ui.shared.UserMessageShower;
 import core.activities.ui.shared.forms.CheckFieldValidations;
 import core.activities.ui.shared.forms.FormAdapterEx;
-import core.activities.ui.shared.forms.JSONModelEx;
 import core.activities.ui.shared.forms.MultiSpinnerHolder;
 import core.activities.ui.shared.ui.ItemSelectedListener;
+import core.activities.ui.shared.ui.UiConstants;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
 import core.shared.CommonUtils;
 import core.shared.Traceable;
-import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.shamweel.jsontoforms.sigleton.DataValueHashMap.dataValueHashMap;
 
@@ -61,7 +60,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_document_wizard);
         Spinner docTypeSelectionSpinner = findViewById(R.id.docTypeSelectionSpinner);
-        final List<String> docTypes = getIntent().getStringArrayListExtra("docTypes");
+        final List<String> docTypes = getIntent().getStringArrayListExtra(UiConstants.DOC_TYPES_EXTRA);
         if (docTypes.size() <= 1) {
             docTypeSelectionSpinner.setEnabled(false);
         }
@@ -71,12 +70,10 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
             final String userDocType = adapter.getItem(position);
             DataValueHashMap.init();
             jsonModelList.clear();
-            fetchFormConfig(HLFDataAdapter.fromUserDocumentType(userDocType));
+            Document document = getIntent().getParcelableExtra(UiConstants.DOC_TO_EDIT_EXTRA);
+            fetchFormConfig(HLFDataAdapter.fromUserDocumentType(userDocType), document);
         });
         recyclerView = findViewById(R.id.recyclerView);
-        Document document = getIntent().getParcelableExtra("edit");
-        trace("Doc got " + document);
-        // doc wasn't edited
         setResult(RESULT_OK, null);
         DataValueHashMap.init();
         initRecyclerView();
@@ -116,7 +113,9 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
                             .type(docType)
                             .owner(token.getClaim("member").asString())
                             .group(token.getClaim("group").asString())
-                            .content(content)
+                            .attributes(Attributes.builder()
+                                    .content(content)
+                                    .build())
                             .signsRequired(signs)
                             .build();
                     try {
@@ -166,14 +165,19 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
         }
     }
 
-    private void fetchFormConfig(String docType) {
+    private void fetchFormConfig(String docType, Document document) {
+        if (Objects.nonNull(document)) {
+            Preconditions.checkArgument(docType.equals(document.getType()),
+                    "Different types: form retched for type: " + docType + ", but doc's actual type: " + document.getStatus());
+        }
         this.docType = docType;
         final JWT token = SessionManager.getInstance().getUserToken(ApplicationContext.get()).orElseThrow(IllegalStateException::new);
         Async.execute(() -> {
             try {
                 final GetFormConfigResponse formConfig =
                         HLFMiddlewareAPIClient.getInstance().getFormConfig(new GetFormConfigRequest(docType), token.toString());
-                jsonModelList.addAll(fixFormConfig(formConfig.getConfig()));
+                adaptFormModel(formConfig.getConfig(), document);
+                jsonModelList.addAll(formConfig.getConfig());
                 runOnUiThread(() -> mAdapter.notifyDataSetChanged());
             } catch (HLFException e) {
                 showUserMessage(R.string.unexpected_error);
@@ -181,16 +185,21 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
         });
     }
 
-    private <T extends JSONModel> List<T> fixFormConfig(List<T> formConfig) {
-        formConfig.stream()
-                .filter(model -> "doc_type_spinner".equals(model.getId()))
-                .findFirst()
-                .ifPresent(self -> self.getList()
-                        .forEach(listItem -> {
-                            String docType = HLFDataAdapter.toUserDocumentType(listItem.getIndexText());
-                            listItem.setIndexText(docType);
-                        })
-                );
-        return formConfig;
+    private <T extends JSONModel> void adaptFormModel(List<T> formModel, Document document) {
+        // change like so, each json input has type and id = doc.attributes.<id>
+        if (Objects.nonNull(document)) {
+            FormModelAdapter.adapt(formModel, document);
+        } else {
+            formModel.stream()
+                    // todo change to doc_type
+                    .filter(model -> "doc_type_spinner".equals(model.getId()))
+                    .findFirst()
+                    .ifPresent(self -> self.getList()
+                            .forEach(listItem -> {
+                                String docType = HLFDataAdapter.toUserDocumentType(listItem.getIndexText());
+                                listItem.setIndexText(docType);
+                            })
+                    );
+        }
     }
 }

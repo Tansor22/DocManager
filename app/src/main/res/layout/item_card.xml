@@ -98,18 +98,15 @@
                 android:layout_height="wrap_content">
 
             <ImageView
-                    android:id="@+id/rejectImg"
+                    android:id="@+id/leftImg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_reject"
                     android:layout_gravity="center"/>
             <TextView
-                    android:id="@+id/rejectHint"
+                    android:id="@+id/leftHint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color_red"
-                    android:textSize="70sp"
-                    android:text="@string/action_reject"/>
+                    android:textSize="70sp"/>
 
         </LinearLayout>
     </FrameLayout>
@@ -127,75 +124,16 @@
                 android:layout_height="wrap_content">
 
             <ImageView
-                    android:id="@+id/approveImg"
+                    android:id="@+id/rightImg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_approve"
                     android:layout_gravity="center"/>
             <TextView
-                    android:id="@+id/approveHint"
+                    android:id="@+id/rightHint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color_green"
-                    android:textSize="70sp"
-                    android:text="@string/action_approve"/>
+                    android:textSize="70sp"/>
 
-        </LinearLayout>
-
-    </FrameLayout>
-
-    <FrameLayout
-            android:id="@+id/top_overlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/overlay_black">
-
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content">
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_later"
-                    android:layout_gravity="center"/>
-
-            <TextView
-                    android:id="@+id/laterHint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#ACACAC"
-                    android:textSize="70sp"
-                    android:text="@string/action_later"/>
-        </LinearLayout>
-
-    </FrameLayout>
-
-    <FrameLayout
-            android:id="@+id/bottom_overlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/overlay_black">
-
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content">
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_edit"
-                    android:layout_gravity="center"/>
-
-            <TextView
-                    android:id="@+id/editHint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#ACACAC"
-                    android:textSize="70sp"
-                    android:text="@string/action_edit"/>
         </LinearLayout>
 
     </FrameLayout>

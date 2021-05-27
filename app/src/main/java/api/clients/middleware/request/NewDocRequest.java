@@ -1,5 +1,6 @@
 package api.clients.middleware.request;
 
+import api.clients.middleware.entity.Attributes;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
@@ -13,7 +14,7 @@ public class NewDocRequest {
     String type;
     String owner;
     String group;
-    String content;
+    Attributes attributes;
     @Singular(value = "signRequired")
     List<String> signsRequired;
 }

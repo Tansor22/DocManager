@@ -11,8 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import api.clients.middleware.entity.Document;
-import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
-import com.yuyakaido.android.cardstackview.Direction;
 import core.activities.R;
 import core.shared.ApplicationContext;
 
@@ -60,10 +58,10 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
             _status = itemView.findViewById(R.id.item_status);
             _content = itemView.findViewById(R.id.item_content);
             _signsContainer = itemView.findViewById(R.id.signsContainer);
-            _rightOverlayText = itemView.findViewById(R.id.approveHint);
-            _leftOverlayText = itemView.findViewById(R.id.rejectHint);
-            _rightOverlayImg = itemView.findViewById(R.id.approveImg);
-            _leftOverlayImg = itemView.findViewById(R.id.rejectImg);
+            _rightOverlayText = itemView.findViewById(R.id.rightHint);
+            _leftOverlayText = itemView.findViewById(R.id.leftHint);
+            _rightOverlayImg = itemView.findViewById(R.id.rightImg);
+            _leftOverlayImg = itemView.findViewById(R.id.leftImg);
         }
 
         void setData(SwipeItemModel model) {
@@ -74,9 +72,10 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
                     + model.getDocument().getDateForUser());
             _status.setText(ApplicationContext.get().getString(R.string.doc_status_prefix) + " "
                     + model.getDocument().getStatusForUser());
-            _content.setText(model.getDocument().getContent());
+            _content.setText(model.getDocument().getAttributes().getContent());
             // signs
-            for (String sign : model.getDocument().getSignsRequired()) {
+            for (int i = 0; i < model.getDocument().getSignsRequired().size(); i++) {
+                String sign = (String) model.getDocument().getSignsRequired().get(i);
                 TextView signTextView = new TextView(itemView.getContext());
                 signTextView.setText(sign);
                 signTextView.setTextColor(ContextCompat.getColor(ApplicationContext.get(), R.color.colorFullBlack));
@@ -92,9 +91,26 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
             }
         }
 
-        // should use only in case of mode FREEDOM
         public void configureOverlays(Document document) {
-
+            if ("PROCESSING".equals(document.getStatus())) {
+                // approve
+                _rightOverlayImg.setImageResource(R.drawable.ic_approve);
+                _rightOverlayText.setText(R.string.action_approve);
+                _rightOverlayText.setTextColor(ApplicationContext.get().getResources().getColor(R.color.color_green));
+                // reject
+                _leftOverlayImg.setImageResource(R.drawable.ic_reject);
+                _leftOverlayText.setText(R.string.action_reject);
+                _leftOverlayText.setTextColor(ApplicationContext.get().getResources().getColor(R.color.color_red));
+            } else {
+                // edit
+                _rightOverlayImg.setImageResource(R.drawable.ic_edit);
+                _rightOverlayText.setText(R.string.action_edit);
+                _rightOverlayText.setTextColor(ApplicationContext.get().getResources().getColor(R.color.grey));
+                // skip
+                _leftOverlayImg.setImageResource(R.drawable.ic_later);
+                _leftOverlayText.setText(R.string.action_later);
+                _leftOverlayText.setTextColor(ApplicationContext.get().getResources().getColor(R.color.grey));
+            }
         }
     }
 

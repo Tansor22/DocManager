@@ -19,11 +19,12 @@ public class Document implements Parcelable {
     String group;
     String type;
     String date;
-    String content;
+    Attributes attributes;
     String status;
     List<Change> changes;
     List<String> signsRequired;
     List<String> signedBy;
+
 
     protected Document(Parcel in) {
         documentId = in.readString();
@@ -32,8 +33,9 @@ public class Document implements Parcelable {
         group = in.readString();
         type = in.readString();
         date = in.readString();
-        content = in.readString();
+        attributes = in.readParcelable(DocTypeHolder.INSTANCE.get(type).getClassLoader());
         status = in.readString();
+        changes = in.createTypedArrayList(Change.CREATOR);
         signsRequired = in.createStringArrayList();
         signedBy = in.createStringArrayList();
     }
@@ -49,25 +51,6 @@ public class Document implements Parcelable {
             return new Document[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(documentId);
-        dest.writeString(title);
-        dest.writeString(owner);
-        dest.writeString(group);
-        dest.writeString(type);
-        dest.writeString(date);
-        dest.writeString(content);
-        dest.writeString(status);
-        dest.writeStringList(signsRequired);
-        dest.writeStringList(signedBy);
-    }
 
     public String getStatusForUser() {
         return HLFDataAdapter.toUserStatus(status);
@@ -91,5 +74,25 @@ public class Document implements Parcelable {
             }
         }
         return signsRequired.get(signsRequired.size() - 1);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(documentId);
+        dest.writeString(title);
+        dest.writeString(owner);
+        dest.writeString(group);
+        dest.writeString(type);
+        dest.writeString(date);
+        dest.writeParcelable(attributes, flags);
+        dest.writeString(status);
+        dest.writeTypedList(changes);
+        dest.writeStringList(signsRequired);
+        dest.writeStringList(signedBy);
     }
 }

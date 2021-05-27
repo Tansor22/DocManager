@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import api.clients.middleware.HLFDataAdapter;
 import api.clients.middleware.HLFMiddlewareAPIClient;
+import api.clients.middleware.entity.Attributes;
 import api.clients.middleware.exception.HLFException;
 import api.clients.middleware.request.GetFormConfigRequest;
 import api.clients.middleware.request.NewDocRequest;
@@ -37,6 +37,7 @@ import core.activities.ui.shared.UserMessageShower;
 import core.activities.ui.shared.forms.CheckFieldValidations;
 import core.activities.ui.shared.forms.FormAdapterEx;
 import core.activities.ui.shared.forms.MultiSpinnerHolder;
+import core.activities.ui.shared.ui.UiConstants;
 import core.sessions.SessionConstants;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
@@ -68,7 +69,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
                 .setView(dontShowAnymoreCheckBox)
                 .setPositiveButton(R.string.answer_yes, (dialog, ignored) -> model.getDocTypes().observe(getViewLifecycleOwner(), docTypes -> {
                     Intent intent = new Intent(requireContext(), CreateDocumentWizardActivity.class);
-                    intent.putStringArrayListExtra("docTypes", new ArrayList<>(docTypes));
+                    intent.putStringArrayListExtra(UiConstants.DOC_TYPES_EXTRA, new ArrayList<>(docTypes));
                     startActivity(intent);
                     SessionManager.getInstance().store(ApplicationContext.get(), DONT_SHOW_WIZARD_DIALOG_FLAG_KEY, Boolean.toString(dontShowAnymoreCheckBox.isChecked()));
                 }))
@@ -160,7 +161,9 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
                         .type(HLFDataAdapter.fromUserDocumentType(dataValueHashMap.get("doc_type_spinner")))
                         .owner(token.getClaim("member").asString())
                         .group(token.getClaim("group").asString())
-                        .content(dataValueHashMap.get("doc_content_edit"))
+                        .attributes(Attributes.builder()
+                                .content(dataValueHashMap.get("doc_content_edit"))
+                                .build())
                         .signsRequired(signs)
                         .build();
                 HLFMiddlewareAPIClient.getInstance().newDoc(newDocRequest, token.toString());

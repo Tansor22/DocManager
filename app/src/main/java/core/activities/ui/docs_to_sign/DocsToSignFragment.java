@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import api.clients.middleware.HLFDataAdapter;
 import api.clients.middleware.HLFMiddlewareAPIClient;
 import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
@@ -36,6 +37,7 @@ import core.activities.ui.docs_to_sign.swipe.SwipeItemModel;
 import core.activities.ui.main.MainActivity;
 import core.activities.ui.shared.Async;
 import core.activities.ui.shared.UserMessageShower;
+import core.activities.ui.shared.ui.UiConstants;
 import core.activities.ui.view_docs.DocumentsViewHolder;
 import core.sessions.SessionManager;
 import core.shared.ApplicationContext;
@@ -46,6 +48,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static android.app.Activity.RESULT_OK;
+import static core.activities.ui.shared.ui.UiConstants.*;
 
 public class DocsToSignFragment extends Fragment implements Traceable, UserMessageShower {
     private CardStackLayoutManager manager;
@@ -91,53 +94,15 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
                 root.findViewById(R.id.noMoreDocsHint).setVisibility(View.VISIBLE);
             }
         });
-        manager = new CardStackLayoutManager(requireContext(), new CardStackListener() {
-            @Override
-            public void onCardDragging(Direction direction, float ratio) {
-            }
-
-            @Override
-            public void onCardSwiped(Direction direction) {
-                final SwipeItemModel docSwiped = adapter.getItems().get(manager.getTopPosition() - 1);
-                if (direction == Direction.Right) {
-                    processApprove(docSwiped);
-                } else if (direction == Direction.Left) {
-                    processReject(docSwiped);
-                } else if (direction == Direction.Bottom) {
-                    processEdit(docSwiped);
-                }
-            }
-
-            @Override
-            public void onCardRewound() {
-
-            }
-
-            @Override
-            public void onCardCanceled() {
-
-            }
-
-            @Override
-            public void onCardAppeared(View view, int position) {
-                // can't move this logic to obBind holder as binding triggers for all holder,
-                // should manage manager state dynamically
-                final Document document = adapter.getItems().get(position).getDocument();
-                // handle its status
-                if ("REJECTED".equals(document.getStatus())) {
-                    manager.setDirections(Direction.VERTICAL);
-                    manager.setCanScrollHorizontal(false);
-                    manager.setCanScrollVertical(true);
-                } else {
-                    manager.setDirections(Direction.HORIZONTAL);
-                    manager.setCanScrollVertical(false);
-                    manager.setCanScrollHorizontal(true);
-                }
-            }
-
-            @Override
-            public void onCardDisappeared(View view, int position) {
-
+        manager = new CardStackLayoutManager(requireContext(), (DocStackListener) direction -> {
+            final SwipeItemModel docSwiped = adapter.getItems().get(manager.getTopPosition() - 1);
+            final Document document = docSwiped.getDocument();
+            if ("PROCESSING".equals(document.getStatus()) && direction == Direction.Right) {
+                processApprove(docSwiped);
+            } else if ("REJECTED".equals(document.getStatus()) && direction == Direction.Right) {
+                processEdit(docSwiped);
+            } else if ("PROCESSING".equals(document.getStatus()) && direction == Direction.Left) {
+                processReject(docSwiped);
             }
         });
         manager.setStackFrom(StackFrom.Left);
@@ -179,28 +144,32 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
 
     private void processEdit(SwipeItemModel docSwiped) {
         Intent intent = new Intent(requireContext(), CreateDocumentWizardActivity.class);
-        intent.putExtra("edit", docSwiped.getDocument());
-        ArrayList<String> arr = new ArrayList<>();
-        arr.add("Другое");
-        intent.putStringArrayListExtra("docTypes", arr);
-        startActivityForResult(intent, 1);
+        final Document document = docSwiped.getDocument();
+        // binding params
+        intent.putExtra(DOC_TO_EDIT_EXTRA, document);
+        ArrayList<String> types = new ArrayList<>();
+        types.add(HLFDataAdapter.toUserDocumentType(document.getType()));
+        intent.putStringArrayListExtra(DOC_TYPES_EXTRA, types);
+        startActivityForResult(intent, EDIT_DOC_SIGNAL);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
+        if (requestCode == EDIT_DOC_SIGNAL) {
             if (resultCode == RESULT_OK) {
-                String message = Optional.ofNullable(data)
-                        .map(self -> self.getStringExtra("answer"))
+                String title = Optional.ofNullable(data)
+                        .map(self -> self.getStringExtra(EDITED_DOC_TITLE_EXTRA))
                         .orElse(null);
-                trace("Answer: " + (StringUtils.isNotEmpty(message) ? message : "Didn't got! rewind!!"));
-                if (StringUtils.isEmpty(message)) {
+                if (StringUtils.isNotEmpty(title)) {
+                    showUserMessage(getString(R.string.doc_edited, title));
+                } else {
                     cardStackView.rewind();
                 }
             }
         }
     }
+
     @Override
     public void onDestroyView() {
         if (needUpdate)
