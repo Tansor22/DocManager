@@ -1,5 +1,6 @@
 package api.clients.middleware.request;
 
+import api.clients.middleware.entity.Attributes;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,4 +11,5 @@ public class ChangeDocRequest {
     String member;
     String type;
     String details;
+    Attributes attributes;
 }

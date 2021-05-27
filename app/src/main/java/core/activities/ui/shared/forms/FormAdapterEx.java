@@ -18,6 +18,7 @@ import core.activities.R;
 import core.activities.ui.shared.UserMessageShower;
 import core.shared.ApplicationContext;
 import core.shared.Traceable;
+import org.apache.commons.lang3.BooleanUtils;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -171,6 +172,7 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
         JSONModel jsonModel = backJsonModelList.get(position);
         holder.spinnerTextView.setText(jsonModel.getText());
         holder.multiSpinner.setDialogTitle(jsonModel.getHint());
+        holder.multiSpinner.setEnabled(BooleanUtils.isNotFalse(jsonModel.getEditable()));
         holder.multiSpinner.setSelectAllButtonText(ApplicationContext.get().getString(R.string.select_all));
         holder.multiSpinner.setOkButtonText(ApplicationContext.get().getString(R.string.ok));
         holder.multiSpinner.setCancelButtonText(ApplicationContext.get().getString(R.string.cancel));

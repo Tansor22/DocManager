@@ -43,6 +43,9 @@ public class MultiSelectionSpinner extends AppCompatSpinner implements
     @Getter
     @Setter
     String cancelButtonText;
+    @Getter
+    @Setter
+    boolean isEnabled;
 
     public interface OnMultipleItemsSelectedListener {
         void selectedIndices(List<Integer> indices, MultiSelectionSpinner spinner);
@@ -74,29 +77,32 @@ public class MultiSelectionSpinner extends AppCompatSpinner implements
         }
     }
 
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean performClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(Objects.nonNull(dialogTitle) ? dialogTitle : "Select");
-        builder.setMultiChoiceItems(_items, mSelection, this);
-        _itemsAtStart = getSelectedItemsAsString();
+        if (isEnabled) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle(Objects.nonNull(dialogTitle) ? dialogTitle : "Select");
+            builder.setMultiChoiceItems(_items, mSelection, this);
+            _itemsAtStart = getSelectedItemsAsString();
 
-        builder.setNeutralButton(Objects.nonNull(selectAllButtonText) ? selectAllButtonText : "Select All",
-                (dialog, which) -> selectAll());
+            builder.setNeutralButton(Objects.nonNull(selectAllButtonText) ? selectAllButtonText : "Select All",
+                    (dialog, which) -> selectAll());
 
-        builder.setPositiveButton(Objects.nonNull(okButtonText) ? okButtonText : "Ok", (dialog, which) -> {
-            System.arraycopy(mSelection, 0, mSelectionAtStart, 0, mSelection.length);
-            listener.selectedIndices(getSelectedIndices(), MultiSelectionSpinner.this);
-            listener.selectedStrings(getSelectedStrings(), MultiSelectionSpinner.this);
-        });
+            builder.setPositiveButton(Objects.nonNull(okButtonText) ? okButtonText : "Ok", (dialog, which) -> {
+                System.arraycopy(mSelection, 0, mSelectionAtStart, 0, mSelection.length);
+                listener.selectedIndices(getSelectedIndices(), MultiSelectionSpinner.this);
+                listener.selectedStrings(getSelectedStrings(), MultiSelectionSpinner.this);
+            });
 
-        builder.setNegativeButton(Objects.nonNull(cancelButtonText) ? cancelButtonText : "Cancel", (dialog, which) -> {
-            arrayAdapter.clear();
-            arrayAdapter.add(_itemsAtStart);
-            System.arraycopy(mSelectionAtStart, 0, mSelection, 0, mSelectionAtStart.length);
-        });
-        builder.show();
+            builder.setNegativeButton(Objects.nonNull(cancelButtonText) ? cancelButtonText : "Cancel", (dialog, which) -> {
+                arrayAdapter.clear();
+                arrayAdapter.add(_itemsAtStart);
+                System.arraycopy(mSelectionAtStart, 0, mSelection, 0, mSelectionAtStart.length);
+            });
+            builder.show();
+        }
         return true;
     }
 

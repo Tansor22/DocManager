@@ -1,7 +1,6 @@
-package api.clients.middleware.json;
+package api.clients.middleware.adapt;
 
 import api.clients.middleware.entity.Attributes;
-import api.clients.middleware.entity.DocTypeHolder;
 import api.clients.middleware.entity.Document;
 import com.google.gson.*;
 
@@ -25,7 +24,7 @@ public class DocumentAdapter implements /*JsonSerializer<Document>,*/ JsonDeseri
         // bind attributes
         final JsonObject attributes = jsonObject.getAsJsonObject("attributes");
         // actual type should be right
-        final Object deserializedAttrs = context.deserialize(attributes, DocTypeHolder.INSTANCE.get(type));
+        final Object deserializedAttrs = context.deserialize(attributes, DocTypesManager.classForType(type));
         deserialized.setAttributes((Attributes) deserializedAttrs);
         return deserialized;
     }

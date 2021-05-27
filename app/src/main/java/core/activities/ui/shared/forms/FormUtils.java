@@ -1,19 +1,47 @@
 package core.activities.ui.shared.forms;
 
+import android.widget.Adapter;
 import android.widget.RadioButton;
 import androidx.recyclerview.widget.RecyclerView;
 import com.shamweel.jsontoforms.FormConstants;
+import com.shamweel.jsontoforms.adapters.FormAdapter;
 import com.shamweel.jsontoforms.models.JSONModel;
 import com.shamweel.jsontoforms.sigleton.DataValueHashMap;
 import com.shamweel.jsontoforms.viewholder.CheckboxViewHolder;
 import com.shamweel.jsontoforms.viewholder.EditTextViewHolder;
 import com.shamweel.jsontoforms.viewholder.RadioViewHolder;
+import com.shamweel.jsontoforms.viewholder.SpinnerViewHolder;
 import core.activities.R;
 import core.shared.ApplicationContext;
 
 import java.util.List;
 
-public class CheckFieldValidations {
+public class FormUtils {
+    // can be extended
+    public static void clearForm(RecyclerView recyclerView, FormAdapter adapter) {
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            final RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(i);
+            if (holder != null) {
+                if (holder instanceof EditTextViewHolder) {
+                    ((EditTextViewHolder) holder).layoutEdittext.getEditText().setText("");
+                } else if (holder instanceof RadioViewHolder) {
+                    // select first item
+                    ((RadioButton) ((RadioViewHolder) holder).rGroup.getChildAt(0)).setChecked(true);
+                } else if (holder instanceof CheckboxViewHolder) {
+                    // uncheck
+                    ((CheckboxViewHolder) holder).checkBox.setChecked(false);
+                } else if (holder instanceof SpinnerViewHolder) {
+                    //select first item
+                    ((SpinnerViewHolder) holder).spinner.setSelection(0);
+                } else if (holder instanceof MultiSpinnerHolder) {
+                    //select first item
+                    ((MultiSpinnerHolder) holder).getMultiSpinner().setSelection(0);
+                }
+            }
+        }
+    }
+
+
     // no need to do inner forms validation as they are not required
     public static boolean isFieldsValidated(RecyclerView recyclerView, List<JSONModel> jsonModelList) {
         final boolean[] isValidated = {true};

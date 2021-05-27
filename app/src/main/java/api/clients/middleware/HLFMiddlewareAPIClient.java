@@ -4,7 +4,7 @@ import android.content.res.Resources;
 import api.clients.UtilsTLS;
 import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
-import api.clients.middleware.json.DocumentAdapter;
+import api.clients.middleware.adapt.DocumentAdapter;
 import api.clients.middleware.request.*;
 import api.clients.middleware.response.*;
 import com.google.gson.Gson;
@@ -33,7 +33,6 @@ public class HLFMiddlewareAPIClient implements Traceable {
             .setPrettyPrinting()
             .serializeNulls()
             .registerTypeAdapter(Document.class, new DocumentAdapter())
-            //.registerTypeAdapter(NewDocRequest.class, new NewDocRequestAdapter())
             .disableHtmlEscaping()
             .create();
     static MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");

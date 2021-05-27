@@ -3,6 +3,7 @@ package api.clients.middleware.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import api.clients.middleware.HLFDataAdapter;
+import api.clients.middleware.adapt.DocTypesManager;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -33,7 +34,7 @@ public class Document implements Parcelable {
         group = in.readString();
         type = in.readString();
         date = in.readString();
-        attributes = in.readParcelable(DocTypeHolder.INSTANCE.get(type).getClassLoader());
+        attributes = in.readParcelable(DocTypesManager.classForType(type).getClassLoader());
         status = in.readString();
         changes = in.createTypedArrayList(Change.CREATOR);
         signsRequired = in.createStringArrayList();
