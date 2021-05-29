@@ -120,6 +120,7 @@ public class CreateDocumentFragment extends Fragment implements Traceable, JsonT
                         .forEach(listItem -> {
                             String docType = listItem.getIndexText();
                             docTypes.add(docType);
+                            listItem.setIndexText(HLFDataAdapter.toUserDocumentType(docType));
                         })
                 );
         model.getDocTypes().postValue(docTypes);

@@ -4,10 +4,9 @@ import api.clients.middleware.entity.Attributes;
 
 import java.util.Map;
 
-public class GeneralAttributesRetriever extends AttributesRetriever {
+public class GraduatedExpellingAttributesRetriever extends AttributesRetriever {
     @Override
     public Attributes retrieveInternal(Map<String, String> data) {
-        final String content = data.get("content");
-        return new Attributes(content);
+        return null;
     }
 }

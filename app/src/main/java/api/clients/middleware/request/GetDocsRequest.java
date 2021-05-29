@@ -7,4 +7,5 @@ import lombok.Data;
 @Builder
 public class GetDocsRequest {
     String group;
+    Boolean withContent;
 }

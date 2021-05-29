@@ -55,6 +55,7 @@
                       android:textSize="20sp"
                       android:text="@string/doc_signs"/>
         </LinearLayout>
+        <include layout="@layout/hr"/>
         <TextView
                 android:id="@+id/item_content"
                 android:layout_marginBottom="10dp"

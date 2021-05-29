@@ -1,6 +1,5 @@
 package core.activities.ui.create_doc;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -14,9 +13,7 @@ import api.clients.middleware.HLFMiddlewareAPIClient;
 import api.clients.middleware.entity.Attributes;
 import api.clients.middleware.entity.Document;
 import api.clients.middleware.exception.HLFException;
-import api.clients.middleware.request.ChangeDocRequest;
 import api.clients.middleware.request.GetFormConfigRequest;
-import api.clients.middleware.request.NewDocRequest;
 import api.clients.middleware.response.GetFormConfigResponse;
 import com.auth0.android.jwt.JWT;
 import com.shamweel.jsontoforms.adapters.FormAdapter;
@@ -26,7 +23,6 @@ import com.shamweel.jsontoforms.sigleton.DataValueHashMap;
 import core.activities.R;
 import core.activities.ui.create_doc.adapt.FormModelAdapter;
 import core.activities.ui.create_doc.adapt.attributes.AttributesRetriever;
-import core.activities.ui.docs_to_sign.DocsToSignFragment;
 import core.activities.ui.main.MainActivity;
 import core.activities.ui.shared.Async;
 import core.activities.ui.shared.UserMessageShower;
@@ -39,11 +35,13 @@ import core.shared.ApplicationContext;
 import core.shared.Traceable;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.shamweel.jsontoforms.sigleton.DataValueHashMap.dataValueHashMap;
-import static core.activities.ui.shared.ui.UiConstants.EDITED_DOC_TITLE_EXTRA;
 
 public class CreateDocumentWizardActivity extends AppCompatActivity implements UserMessageShower, Traceable {
 
@@ -64,7 +62,10 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
         if (docTypes.size() <= 1) {
             docTypeSelectionSpinner.setEnabled(false);
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, docTypes);
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, docTypes.stream()
+                        .map(HLFDataAdapter::toUserDocumentType)
+                        .collect(Collectors.toList()));
         docTypeSelectionSpinner.setAdapter(adapter);
         docTypeSelectionSpinner.setOnItemSelectedListener((ItemSelectedListener) (parent, itemSelected, position, selectedId) -> {
             final String userDocType = adapter.getItem(position);
@@ -106,7 +107,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
                             .orElseThrow(IllegalStateException::new);
                     List<String> signs = Arrays.asList(dataValueHashMap.get("signs").split(","));
                     final Attributes attributes = AttributesRetriever.of(docType).retrieve(dataValueHashMap);
-                    if (StringUtils.isEmpty(docId)) {
+                  /*  if (StringUtils.isNotEmpty(docId)) {
                         final ChangeDocRequest request = ChangeDocRequest.builder()
                                 .documentId(docId)
                                 .type("EDIT")
@@ -114,7 +115,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
                                 .details("Изменено участником " + token.getClaim("member").asString())
                                 .attributes(attributes)
                                 .build();
-                        try {
+                       try {
                             HLFMiddlewareAPIClient.getInstance().changeDoc(request, token.toString());
                             needUpdate = true;
                             // back to activity called
@@ -144,7 +145,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
                             showUserMessage(String.format(getString(R.string.doc_created_hint), dataValueHashMap.get("title")));
                             FormUtils.clearForm(recyclerView, adapter);
                         });
-                    }
+                    }*/
                 });
             }
         });

@@ -24,6 +24,9 @@ import org.json.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.shamweel.jsontoforms.FormConstants.TYPE_CHECKBOX;
+import static com.shamweel.jsontoforms.FormConstants.TYPE_RADIO;
+
 public class FormAdapterEx extends FormAdapter implements UserMessageShower, Traceable {
     Context backContext;
     List<JSONModel> backJsonModelList;
@@ -129,13 +132,18 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
                 ids.forEach(id -> {
                     final String value = DataValueHashMap.dataValueHashMap.get(id);
                     if (value != null) {
-                        // using '<id>_hint' or '<id>' as uiKey
+                        // using '<id>_hint', for checkboxes and radios use their tex or '<id>' as uiKey
                         String uiKey = formControlsModel.stream()
-                                .filter(control -> control.getId().equals(id + "_hint"))
+                                .filter(control ->
+                                        (control.getId().equals(id) && Arrays.asList(TYPE_CHECKBOX, TYPE_RADIO).contains(control.getType()))
+                                        || control.getId().equals(id + "_hint"))
                                 .findFirst()
                                 .map(JSONModel::getText)
                                 .orElse(id);
-                        uiData.put(uiKey, value);
+                        final JSONModel model = formControlsModel.stream()
+                                .filter(control -> control.getId().equals(id))
+                                .findFirst().orElseThrow(IllegalStateException::new);
+                        uiData.put(uiKey, TYPE_CHECKBOX == model.getType() ? "Да" : value);
                         modelData.put(id, value);
                     }
                 });
