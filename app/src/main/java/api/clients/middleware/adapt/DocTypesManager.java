@@ -1,7 +1,9 @@
 package api.clients.middleware.adapt;
 
 import api.clients.middleware.entity.Attributes;
+import api.clients.middleware.entity.GraduatedExpellingAttributes;
 import api.clients.middleware.entity.GraduationThesisTopicsAttributes;
+import api.clients.middleware.entity.PracticePermissionAttributes;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
@@ -12,6 +14,8 @@ public class DocTypesManager {
             // provide type => class mappings here
             .put("General", Attributes.class)
             .put("GraduationThesisTopics", GraduationThesisTopicsAttributes.class)
+            .put("GraduatedExpelling", GraduatedExpellingAttributes.class)
+            .put("PracticePermission", PracticePermissionAttributes.class)
             .build();
 
     public static Class<? extends Attributes> classForType(String type) {

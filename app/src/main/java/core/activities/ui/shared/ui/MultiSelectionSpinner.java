@@ -126,22 +126,28 @@ public class MultiSelectionSpinner extends AppCompatSpinner implements
         arrayAdapter = (ArrayAdapter<String>) adapter;
     }
 
-    public void setItems(String[] items) {
+    public void setItems(String[] items, int[] selection) {
         _items = items;
         mSelection = new boolean[_items.length];
         mSelectionAtStart = new boolean[_items.length];
         arrayAdapter.clear();
-        arrayAdapter.add(_items[0]);
         Arrays.fill(mSelection, false);
-        mSelection[0] = true;
-        mSelectionAtStart[0] = true;
+        for (int i = 0; i < selection.length; i++) {
+            arrayAdapter.add(_items[selection[i]]);
+            mSelection[selection[i]] = true;
+            mSelectionAtStart[selection[i]] = true;
+        }
         // trigger listener
         listener.selectedIndices(getSelectedIndices(), MultiSelectionSpinner.this);
         listener.selectedStrings(getSelectedStrings(), MultiSelectionSpinner.this);
     }
 
-    public void setItems(List<String> items) {
-        setItems(items.toArray(new String[0]));
+    public void setItems(List<String> items, int[] selection) {
+        setItems(items.toArray(new String[0]), selection);
+    }
+
+    public void setSelection(String[] selection) {
+        setSelection(Arrays.asList(selection));
     }
 
     public void setSelection(List<String> selection) {

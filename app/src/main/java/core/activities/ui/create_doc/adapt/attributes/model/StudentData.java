@@ -6,6 +6,9 @@ import lombok.Data;
 public class StudentData {
     String fullName;
     String thesis;
+    String nationality;
+    String honoursDegree;
+    String examDate;
     String group;
     String practiceLocation;
     String onGovernmentPay;

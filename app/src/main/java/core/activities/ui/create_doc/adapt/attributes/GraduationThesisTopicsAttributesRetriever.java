@@ -1,5 +1,6 @@
 package core.activities.ui.create_doc.adapt.attributes;
 
+import api.clients.middleware.HLFDataAdapter;
 import api.clients.middleware.entity.Attributes;
 import api.clients.middleware.entity.GraduationThesisTopicsAttributes;
 import api.clients.middleware.entity.GraduationThesisTopicsStudent;
@@ -15,7 +16,7 @@ public class GraduationThesisTopicsAttributesRetriever extends AttributesRetriev
     public Attributes retrieveInternal(Map<String, String> data) {
         GraduationThesisTopicsAttributes attrs = new GraduationThesisTopicsAttributes();
         attrs.group(data.get("group"));
-        attrs.studyType(data.get("study_type"));
+        attrs.studyType(HLFDataAdapter.fromUserStudyType(data.get("study_type")));
         attrs.speciality(data.get("speciality"));
         final List<GraduationThesisTopicsStudent> students = data.entrySet().stream()
                 .filter(e -> e.getKey().startsWith("_data_student"))

@@ -148,7 +148,7 @@ public class DocsToSignFragment extends Fragment implements Traceable, UserMessa
         // binding params
         intent.putExtra(DOC_TO_EDIT_EXTRA, document);
         ArrayList<String> types = new ArrayList<>();
-        types.add(HLFDataAdapter.toUserDocumentType(document.getType()));
+        types.add(document.getType());
         intent.putStringArrayListExtra(DOC_TYPES_EXTRA, types);
         startActivityForResult(intent, EDIT_DOC_SIGNAL);
     }

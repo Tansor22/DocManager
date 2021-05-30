@@ -78,6 +78,9 @@
     <string name="doc_signs">Подписи:</string>
     <string name="doc_status">Завершен</string>
     <string name="doc_status_processing">На рассмотрении</string>
+    <string name="study_type_full_time">Очный</string>
+    <string name="study_type_part_time">Очно-заочный</string>
+    <string name="study_type_self_study">Заочный</string>
     <string name="doc_status_approved">Одобрен</string>
     <string name="doc_status_rejected">Отклонен</string>
     <string name="doc_status_closed">Завершен</string>

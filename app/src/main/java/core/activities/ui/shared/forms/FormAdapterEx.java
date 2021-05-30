@@ -9,16 +9,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
+import androidx.core.util.Preconditions;
 import androidx.recyclerview.widget.RecyclerView;
 import com.shamweel.jsontoforms.adapters.FormAdapter;
 import com.shamweel.jsontoforms.interfaces.JsonToFormClickListener;
 import com.shamweel.jsontoforms.models.JSONModel;
 import com.shamweel.jsontoforms.sigleton.DataValueHashMap;
+import com.shamweel.jsontoforms.viewholder.EditTextViewHolder;
+import com.shamweel.jsontoforms.viewholder.RadioViewHolder;
 import core.activities.R;
 import core.activities.ui.shared.UserMessageShower;
 import core.shared.ApplicationContext;
 import core.shared.Traceable;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -91,11 +95,27 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
             bindMultiSpinner((MultiSpinnerHolder) holder, position);
         } else if (holder instanceof MultiLineEditTextViewHolder) {
             postBindMultiLineEditText((MultiLineEditTextViewHolder) holder, position);
+        } else if (holder instanceof EditTextViewHolder) {
+            postBindEditText((EditTextViewHolder) holder, position);
         } else if (holder instanceof InnerFormHolder) {
             bindInnerFormHolder((InnerFormHolder) holder, position);
         } else if (holder instanceof PicturedTextViewHolder) {
             postBindPicturedTextViewHolder((PicturedTextViewHolder) holder, position);
+        } else if (holder instanceof RadioViewHolder) {
+            postBindRadioViewHolder((RadioViewHolder) holder, position);
         }
+    }
+
+    private void postBindEditText(EditTextViewHolder holder, int position) {
+        final JSONModel jsonModel = backJsonModelList.get(position);
+        holder.layoutEdittext.setHint(StringUtils.defaultString(jsonModel.getHint()));
+    }
+
+    private void postBindRadioViewHolder(RadioViewHolder holder, int position) {
+        JSONModel model = backJsonModelList.get(position);
+        Optional.ofNullable(model.getSelectedValue())
+                .map(Integer::parseInt)
+                .ifPresent(holder.rGroup::check);
     }
 
     private void postBindPicturedTextViewHolder(PicturedTextViewHolder holder, int position) {
@@ -107,6 +127,10 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
         JSONModelEx formModel = (JSONModelEx) backJsonModelList.get(position);
         final List<JSONModel> formControlsModel = formModel.getForm();
         holder.jsonModelList = formControlsModel;
+        // for compatibility with form model adapters
+        counter = (int) formControlsModel.stream()
+                .filter(control -> control.getId().startsWith("_data_" + formModel.getId()))
+                .count();
         FormAdapter adapter = new FormAdapterEx(formControlsModel, holder.recyclerView.getContext(), new JsonToFormClickListener() {
 
             private String getUiRepresentation(Map<String, String> uiData) {
@@ -136,7 +160,7 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
                         String uiKey = formControlsModel.stream()
                                 .filter(control ->
                                         (control.getId().equals(id) && Arrays.asList(TYPE_CHECKBOX, TYPE_RADIO).contains(control.getType()))
-                                        || control.getId().equals(id + "_hint"))
+                                                || control.getId().equals(id + "_hint"))
                                 .findFirst()
                                 .map(JSONModel::getText)
                                 .orElse(id);
@@ -171,9 +195,11 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
         final EditText editText = Objects.requireNonNull(holder.layoutEdittext.getEditText());
         editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         // max length in Multiline edit means rows, not symbols
-        editText.setMinLines(backJsonModelList.get(position).getMaxLength());
+        final JSONModel jsonModel = backJsonModelList.get(position);
+        editText.setMinLines(jsonModel.getMaxLength());
         // to remove length restriction
         editText.setFilters(new InputFilter[]{});
+        holder.layoutEdittext.setHint(StringUtils.defaultString(jsonModel.getHint()));
     }
 
     private void bindMultiSpinner(MultiSpinnerHolder holder, int position) {
@@ -191,12 +217,22 @@ public class FormAdapterEx extends FormAdapter implements UserMessageShower, Tra
         ArrayAdapter<String> adapter = new ArrayAdapter<>(backContext, android.R.layout.simple_spinner_item, spinnerItems);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         holder.multiSpinner.setAdapter(adapter);
-        holder.multiSpinner.setItems(spinnerItems);
 
         if (!DataValueHashMap.getValue(jsonModel.getId()).isEmpty()) {
-            int spinnerPosition = adapter.getPosition(DataValueHashMap.getValue(jsonModel.getId()));
-            holder.multiSpinner.setSelection(spinnerPosition);
+            final String[] selection = DataValueHashMap.getValue(jsonModel.getId()).split(",");
+            int[] selectionIndices = new int[selection.length];
+            for (int i = 0; i < selection.length; i++) {
+                final int selectionIndex = spinnerItems.indexOf(selection[i]);
+                Preconditions.checkState(selectionIndex != -1,
+                        "DataValueHashMap holds incorrect values," +
+                                " there is no such items in spinner " + Arrays.toString(selection));
+                selectionIndices[i] = selectionIndex;
+            }
+            holder.multiSpinner.setItems(spinnerItems, selectionIndices);
+            holder.multiSpinner.setSelection(selection);
         } else {
+            // select first element
+            holder.multiSpinner.setItems(spinnerItems, new int[]{0});
             holder.multiSpinner.setSelection(0);
         }
     }
