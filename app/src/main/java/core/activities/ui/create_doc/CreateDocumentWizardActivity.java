@@ -121,7 +121,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
                                 // todo calc diff
                                 .attributes(attributes)
                                 .build();
-                     /*  try {
+                      try {
                             HLFMiddlewareAPIClient.getInstance().changeDoc(request, token.toString());
                             needUpdate = true;
                             // back to activity called
@@ -131,7 +131,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
                             finish();
                         } catch (HLFException e) {
                             showUserMessage(R.string.unexpected_error);
-                        }*/
+                        }
                     } else {
                         final NewDocRequest newDocRequest = NewDocRequest.builder()
                                 .title(dataValueHashMap.get("title"))

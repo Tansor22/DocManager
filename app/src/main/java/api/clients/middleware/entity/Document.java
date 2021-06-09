@@ -7,7 +7,9 @@ import api.clients.middleware.adapt.DocTypesManager;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.collections.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -59,6 +61,13 @@ public class Document implements Parcelable {
 
     public String getDateForUser() {
         return HLFDataAdapter.parseDate(date);
+    }
+
+    public Change getLastChange() {
+        if (CollectionUtils.isNotEmpty(changes)) {
+            return changes.get(changes.size() - 1);
+        }
+        return new Change();
     }
 
     public String getCurrentSign() {

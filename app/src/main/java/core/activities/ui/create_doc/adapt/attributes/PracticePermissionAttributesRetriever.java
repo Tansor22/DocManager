@@ -17,7 +17,7 @@ public class PracticePermissionAttributesRetriever extends AttributesRetriever{
     public Attributes retrieveInternal(Map<String, String> data) {
         PracticePermissionAttributes attrs = new PracticePermissionAttributes();
         attrs.course(Integer.parseInt(Objects.requireNonNull(data.get("course"))));
-        attrs.studyType(HLFDataAdapter.fromUserStudyType(data.get("study_type")));
+        attrs.studyType(HLFDataAdapter.fromUserStudyType(data.get("studyType")));
         attrs.speciality(data.get("speciality"));
         attrs.practiceType(data.get("practiceType"));
         attrs.dateFrom(data.get("dateFrom"));

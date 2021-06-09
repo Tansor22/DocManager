@@ -5,6 +5,10 @@ import api.clients.middleware.entity.Document;
 import com.shamweel.jsontoforms.FormConstants;
 import com.shamweel.jsontoforms.models.JSONModel;
 import com.shamweel.jsontoforms.sigleton.DataValueHashMap;
+import core.activities.ui.create_doc.adapt.attributes.GeneralAttributesRetriever;
+import core.activities.ui.create_doc.adapt.attributes.GraduatedExpellingAttributesRetriever;
+import core.activities.ui.create_doc.adapt.attributes.GraduationThesisTopicsAttributesRetriever;
+import core.activities.ui.create_doc.adapt.attributes.PracticePermissionAttributesRetriever;
 import core.activities.ui.shared.forms.FormAdapterEx;
 import core.activities.ui.shared.forms.JSONModelEx;
 import lombok.AllArgsConstructor;
@@ -48,6 +52,10 @@ public abstract class FormModelAdapter<A extends Attributes> {
                 return new GeneralFormModelAdapter(document);
             case "GraduationThesisTopics":
                 return new GraduationThesisTopicsFormModelAdapter(document);
+            case "PracticePermission":
+                return new PracticePermissionFormModelAdapter(document);
+            case "GraduatedExpelling":
+                return new GraduatedExpellingFormModelAdapter(document);
             default:
                 throw new IllegalArgumentException("No form model adapter for doc with type = " + type);
         }

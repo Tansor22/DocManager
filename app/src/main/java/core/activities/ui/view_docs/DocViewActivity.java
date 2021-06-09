@@ -2,6 +2,7 @@ package core.activities.ui.view_docs;
 
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,12 +16,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.lang3.StringUtils;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Accessors(fluent = true, prefix = "_")
 public class DocViewActivity extends AppCompatActivity implements Traceable, UserMessageShower {
-    TextView _title, _date, _status, _owner, _content;
+    TextView _title, _date, _status, _reason, _owner, _content;
     LinearLayout _signsContainer;
 
     @Override
@@ -31,6 +33,7 @@ public class DocViewActivity extends AppCompatActivity implements Traceable, Use
         _date = findViewById(R.id.item_date);
         _owner = findViewById(R.id.item_owner);
         _status = findViewById(R.id.item_status);
+        _reason = findViewById(R.id.item_reason);
         _content = findViewById(R.id.item_content);
         _signsContainer = findViewById(R.id.signsContainer);
         final Document doc = getIntent().getParcelableExtra("doc");
@@ -43,6 +46,14 @@ public class DocViewActivity extends AppCompatActivity implements Traceable, Use
                 + doc.getOwner());
         _date.setText(ApplicationContext.get().getString(R.string.doc_date_prefix) + " "
                 + doc.getDateForUser());
+        final String reason = doc.getLastChange().getDetails();
+        if ("REJECTED".equals(doc.getStatus()) && StringUtils.isNotEmpty(reason)) {
+            _reason.setVisibility(View.VISIBLE);
+            _reason.setText(ApplicationContext.get().getString(R.string.doc_reject_reason) + " "
+                    + reason);
+        } else {
+            _reason.setVisibility(View.GONE);
+        }
         _status.setText(ApplicationContext.get().getString(R.string.doc_status_prefix) + " "
                 + doc.getStatusForUser());
         _content.setText(doc.getAttributes().getContent());

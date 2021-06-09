@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import api.clients.middleware.entity.Document;
 import core.activities.R;
 import core.shared.ApplicationContext;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView _title, _owner, _date, _status, _content, _rightOverlayText, _leftOverlayText;
+        TextView _title, _owner, _date, _status, _reason, _content, _rightOverlayText, _leftOverlayText;
         ImageView _rightOverlayImg, _leftOverlayImg;
         LinearLayout _signsContainer;
 
@@ -56,6 +57,7 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
             _owner = itemView.findViewById(R.id.item_owner);
             _date = itemView.findViewById(R.id.item_date);
             _status = itemView.findViewById(R.id.item_status);
+            _reason = itemView.findViewById(R.id.item_reason);
             _content = itemView.findViewById(R.id.item_content);
             _signsContainer = itemView.findViewById(R.id.signsContainer);
             _rightOverlayText = itemView.findViewById(R.id.rightHint);
@@ -72,10 +74,18 @@ public class DocStackAdapter extends RecyclerView.Adapter<DocStackAdapter.ViewHo
                     + model.getDocument().getDateForUser());
             _status.setText(ApplicationContext.get().getString(R.string.doc_status_prefix) + " "
                     + model.getDocument().getStatusForUser());
+            final String reason = model.getDocument().getLastChange().getDetails();
+            if ("REJECTED".equals(model.getDocument().getStatus()) && StringUtils.isNotEmpty(reason)) {
+                _reason.setVisibility(View.VISIBLE);
+                _reason.setText(ApplicationContext.get().getString(R.string.doc_reject_reason) + " "
+                        + reason);
+            } else {
+                _reason.setVisibility(View.GONE);
+            }
             _content.setText(model.getDocument().getAttributes().getContent());
             // signs
             for (int i = 0; i < model.getDocument().getSignsRequired().size(); i++) {
-                String sign = (String) model.getDocument().getSignsRequired().get(i);
+                String sign = model.getDocument().getSignsRequired().get(i);
                 TextView signTextView = new TextView(itemView.getContext());
                 signTextView.setText(sign);
                 signTextView.setTextColor(ContextCompat.getColor(ApplicationContext.get(), R.color.colorFullBlack));

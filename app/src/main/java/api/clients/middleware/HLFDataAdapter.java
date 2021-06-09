@@ -15,7 +15,8 @@ import java.util.Optional;
 public class HLFDataAdapter {
     private static final BiMap<String, String> DOC_TYPES;
     private static final BiMap<String, String> DOC_STATUSES;
-    //private static final BiMap<String, String> DOC_STATUS;
+    private static final BiMap<String, Boolean> ON_GOVERNMENT_PAY;
+    private static final BiMap<String, Boolean> HONOURS_DEGREE;
     private static final BiMap<String, String> STUDY_TYPES;
 
     static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
@@ -39,6 +40,14 @@ public class HLFDataAdapter {
         STUDY_TYPES.put("FULL_TIME", ctx.getString(R.string.study_type_full_time));
         STUDY_TYPES.put("PART_TIME", ctx.getString(R.string.study_type_part_time));
         STUDY_TYPES.put("SELF_STUDY", ctx.getString(R.string.study_type_self_study));
+
+        ON_GOVERNMENT_PAY = HashBiMap.create(2);
+        ON_GOVERNMENT_PAY.put(ctx.getString(R.string.on_government_pay_yes), Boolean.TRUE);
+        ON_GOVERNMENT_PAY.put(ctx.getString(R.string.on_government_pay_no), Boolean.FALSE);
+
+        HONOURS_DEGREE = HashBiMap.create(2);
+        HONOURS_DEGREE.put(ctx.getString(R.string.yes), Boolean.TRUE);
+        HONOURS_DEGREE.put(ctx.getString(R.string.no), Boolean.FALSE);
 
     }
 
@@ -73,5 +82,21 @@ public class HLFDataAdapter {
 
     public static String toUserStudyType(String hlfStudy) {
         return throwIfNull(STUDY_TYPES.get(hlfStudy));
+    }
+
+    public static Boolean fromUserOnGovernmentPay(String userOnGovernmentPay) {
+        return throwIfNull(ON_GOVERNMENT_PAY.get(userOnGovernmentPay));
+    }
+
+    public static String toUserOnGovernmentPay(Boolean hlfOnGovernmentPay) {
+        return throwIfNull(ON_GOVERNMENT_PAY.inverse().get(hlfOnGovernmentPay));
+    }
+
+    public static Boolean fromUserHonoursDegree(String userOnGovernmentPay) {
+        return throwIfNull(HONOURS_DEGREE.get(userOnGovernmentPay));
+    }
+
+    public static String toUserHonoursDegree(Boolean hlfOnGovernmentPay) {
+        return throwIfNull(HONOURS_DEGREE.inverse().get(hlfOnGovernmentPay));
     }
 }
