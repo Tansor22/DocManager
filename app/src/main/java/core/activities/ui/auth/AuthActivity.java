@@ -42,8 +42,8 @@ public abstract class AuthActivity extends AppCompatActivity implements View.OnC
         final ImageView closeImageView = findViewById(R.id.closeImageView);
         final TextView changeFormTextView = findViewById(R.id.changeFormTextView);
         // todo for dev purposes, delete later
-        loginEditText.setText("li.suchkova@yandex.ru");
-        passEditText.setText("suchkova31");
+        loginEditText.setText("ishimael@bk.ru");
+        passEditText.setText("avdeev11");
         authViewModel =
                 new ViewModelProvider(this, new AuthViewModelFactory()).get(AuthViewModel.class);
         authViewModel.getLoginFormState().observe(this, loginFormState -> {

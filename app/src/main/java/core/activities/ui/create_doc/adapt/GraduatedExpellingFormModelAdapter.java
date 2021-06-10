@@ -22,6 +22,7 @@ public class GraduatedExpellingFormModelAdapter extends FormModelAdapter<Graduat
             // text edits (multiline and plain)
             case "course":
                 DataValueHashMap.put(model.getId(), attrs.course().toString());
+                break;
             case "speciality":
                 DataValueHashMap.put(model.getId(), attrs.speciality());
                 break;

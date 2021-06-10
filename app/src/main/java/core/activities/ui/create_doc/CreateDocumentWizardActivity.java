@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 import static com.shamweel.jsontoforms.sigleton.DataValueHashMap.dataValueHashMap;
 import static core.activities.ui.shared.ui.UiConstants.EDITED_DOC_TITLE_EXTRA;
 
-public class CreateDocumentWizardActivity extends AppCompatActivity implements UserMessageShower, Traceable {
+public class CreateDocumentWizardActivity extends AppCompatActivity implements UserMessageShower, Traceable, JsonToFormClickListener {
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
@@ -81,9 +81,9 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
             fetchFormConfig(HLFDataAdapter.fromUserDocumentType(userDocType), document);
         });
         recyclerView = findViewById(R.id.recyclerView);
-        setResult(RESULT_OK, null);
         DataValueHashMap.init();
         initRecyclerView();
+        setResult(RESULT_OK, null);
     }
 
     @Override
@@ -94,67 +94,7 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
     }
 
     private void initRecyclerView() {
-        adapter = new FormAdapterEx(jsonModelList, this, new JsonToFormClickListener() {
-            @Override
-            public void onAddAgainButtonClick() {
-
-            }
-
-            @Override
-            public void onSubmitButtonClick() {
-                if (!FormUtils.isFieldsValidated(recyclerView, jsonModelList)) {
-                    showUserMessage(R.string.validation_failed);
-                    return;
-                }
-
-                Async.execute(() -> {
-                    final JWT token = SessionManager.getInstance().getUserToken(ApplicationContext.get())
-                            .orElseThrow(IllegalStateException::new);
-                    List<String> signs = Arrays.asList(dataValueHashMap.get("signs").split(","));
-                    final Attributes attributes = AttributesRetriever.of(docType).retrieve(dataValueHashMap);
-                   if (StringUtils.isNotEmpty(docId)) {
-                        final ChangeDocRequest request = ChangeDocRequest.builder()
-                                .documentId(docId)
-                                .type("EDIT")
-                                .member(token.getClaim("member").asString())
-                                .details("Изменено участником " + token.getClaim("member").asString())
-                                // todo calc diff
-                                .attributes(attributes)
-                                .build();
-                      try {
-                            HLFMiddlewareAPIClient.getInstance().changeDoc(request, token.toString());
-                            needUpdate = true;
-                            // back to activity called
-                            Intent intent = new Intent(CreateDocumentWizardActivity.this, DocsToSignFragment.class);
-                            intent.putExtra(EDITED_DOC_TITLE_EXTRA, dataValueHashMap.get("title"));
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        } catch (HLFException e) {
-                            showUserMessage(R.string.unexpected_error);
-                        }
-                    } else {
-                        final NewDocRequest newDocRequest = NewDocRequest.builder()
-                                .title(dataValueHashMap.get("title"))
-                                .type(docType)
-                                .owner(token.getClaim("member").asString())
-                                .group(token.getClaim("group").asString())
-                                .attributes(attributes)
-                                .signsRequired(signs)
-                                .build();
-                        try {
-                            HLFMiddlewareAPIClient.getInstance().newDoc(newDocRequest, token.toString());
-                            needUpdate = true;
-                        } catch (HLFException e) {
-                            showUserMessage(R.string.unexpected_error);
-                        }
-                        runOnUiThread(() -> {
-                            showUserMessage(String.format(getString(R.string.doc_created_hint), dataValueHashMap.get("title")));
-                            FormUtils.clearForm(recyclerView, adapter);
-                        });
-                    }
-                });
-            }
-        });
+        adapter = new FormAdapterEx(jsonModelList, this, this);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -189,5 +129,65 @@ public class CreateDocumentWizardActivity extends AppCompatActivity implements U
                     .filter(model -> inputsToDisable.contains(model.getId()))
                     .forEach(model -> model.setEditable(false));
         }
+    }
+
+    @Override
+    public void onAddAgainButtonClick() {
+
+    }
+
+    @Override
+    public void onSubmitButtonClick() {
+        if (!FormUtils.isFieldsValidated(recyclerView, jsonModelList)) {
+            showUserMessage(R.string.validation_failed);
+            return;
+        }
+
+        Async.execute(() -> {
+            final JWT token = SessionManager.getInstance().getUserToken(ApplicationContext.get())
+                    .orElseThrow(IllegalStateException::new);
+            List<String> signs = Arrays.asList(dataValueHashMap.get("signs").split(","));
+            final Attributes attributes = AttributesRetriever.of(docType).retrieve(dataValueHashMap);
+            if (StringUtils.isNotEmpty(docId)) {
+                final ChangeDocRequest request = ChangeDocRequest.builder()
+                        .documentId(docId)
+                        .type("EDIT")
+                        .member(token.getClaim("member").asString())
+                        .details("Изменено участником " + token.getClaim("member").asString())
+                        // todo calc diff
+                        .attributes(attributes)
+                        .build();
+                try {
+                    HLFMiddlewareAPIClient.getInstance().changeDoc(request, token.toString());
+                    needUpdate = true;
+                    // back to activity called
+                    Intent intent = new Intent(CreateDocumentWizardActivity.this, DocsToSignFragment.class);
+                    intent.putExtra(EDITED_DOC_TITLE_EXTRA, dataValueHashMap.get("title"));
+                    setResult(RESULT_OK, intent);
+                    finish();
+                } catch (HLFException e) {
+                    showUserMessage(R.string.unexpected_error);
+                }
+            } else {
+                final NewDocRequest newDocRequest = NewDocRequest.builder()
+                        .title(dataValueHashMap.get("title"))
+                        .type(docType)
+                        .owner(token.getClaim("member").asString())
+                        .group(token.getClaim("group").asString())
+                        .attributes(attributes)
+                        .signsRequired(signs)
+                        .build();
+                try {
+                    HLFMiddlewareAPIClient.getInstance().newDoc(newDocRequest, token.toString());
+                    needUpdate = true;
+                } catch (HLFException e) {
+                    showUserMessage(R.string.unexpected_error);
+                }
+                runOnUiThread(() -> {
+                    showUserMessage(String.format(getString(R.string.doc_created_hint), dataValueHashMap.get("title")));
+                    FormUtils.clearForm(recyclerView, adapter);
+                });
+            }
+        });
     }
 }

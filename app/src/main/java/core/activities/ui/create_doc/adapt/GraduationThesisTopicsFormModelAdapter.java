@@ -22,6 +22,7 @@ public class GraduationThesisTopicsFormModelAdapter extends FormModelAdapter<Gra
             // text edits (multiline and plain)
             case "group":
                 DataValueHashMap.put(model.getId(), attrs.group());
+                break;
             case "speciality":
                 DataValueHashMap.put(model.getId(), attrs.speciality());
                 break;
